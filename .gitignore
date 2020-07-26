@@ -1,0 +1,8 @@
+dna/test/node_modules/
+dna/target/
+dna/.cargo/
+dna/dist
+dna/zomes/transactor/code/target
+dna/zomes/profiles/code/target
+.DS_Store
+/ui_old

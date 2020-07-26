@@ -1,0 +1,49 @@
+ <div class="col-md-9" style="margin: auto;">
+  <div style="color:red">{{errorMessage}}</div>
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <section class="post-footer-comment-wrapper">
+          <table class="table">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Transaction</th>
+                <th scope="col">counterparty</th>
+                <th scope="col">state</th>
+              </tr>
+            </thead>
+           
+            <tbody>
+                <tr *ngFor='let offer of (pendingOffers | async)'>
+                  <td scope="row"><a routerLink="/detail/{{ offer.id }}" routerLinkActive="active"></a></td>
+                  <td>{{offer.transaction}}</td>
+                  <td>{{offer.counterparty}}</td>
+                  <td>{{offer.state}}</td>
+                </tr>
+            </tbody>
+          </table>
+          <br />
+        </section>
+        <section class="post-footer-comment-wrapper">
+          <table class="table">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Username</th>
+                <th scope="col">Offer</th>
+              </tr>
+            </thead>
+           
+            <tbody>
+                <tr *ngFor='let agent of (agentlist | async)'>
+                  <td>{{agent.id}}</td>
+                  <td>{{agent.username}}</td>
+                  <td><button (click)="createOffer()">create offer</button></td>
+                </tr>
+            </tbody>
+          </table>
+        </section>
+        <br />
+      </div>
+    </div>
+  </div>

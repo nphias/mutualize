@@ -1,6 +1,8 @@
-import { INSTANCE_NAME } from '../config';
+import { environment } from '@environment';
 import {GraphQLError} from 'graphql'
+
 const ZOME_NAME = "transactor"
+const INSTANCE_NAME = environment.INSTANCE_NAME
 
 function offerToTransaction(id, offer) {
   const state = offer.state;

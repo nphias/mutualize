@@ -1,6 +1,8 @@
-import { INSTANCE_NAME } from '../config';
+import { environment } from '@environment';
 import {GraphQLError} from 'graphql'
+
 const ZOME_NAME = "profiles"
+const INSTANCE_NAME = environment.INSTANCE_NAME
 
 export const resolvers_profile = {
   Query: {

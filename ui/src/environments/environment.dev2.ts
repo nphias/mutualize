@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  ws_port: 9998
+  INSTANCE_NAME: "test-instance",
+  HOST_URL:'ws://localhost:9998'
 };
 
 /*

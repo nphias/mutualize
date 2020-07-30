@@ -6,6 +6,9 @@ import { Validators } from "@angular/forms";
 //import { User } from "../../models/User";
 import { Router } from "@angular/router";
 import { HolochainService } from 'src/app/core/holochain.service';
+import { MyBalanceGQL } from 'src/app/graphql/queries/mybalance-gql';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -14,13 +17,15 @@ import { HolochainService } from 'src/app/core/holochain.service';
   styleUrls: ["./offer.component.css"]
 })
 export class OfferComponent implements OnInit {
-  //user: User //Promise<User> | null = null
+  balance: Observable<number>;
   errorMessage:string = ""
+  username: string
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private holochainservice: HolochainService
+    private holochainservice: HolochainService,
+    private mybalance: MyBalanceGQL
   ) {}
 
   postForm = this.fb.group({
@@ -30,8 +35,23 @@ export class OfferComponent implements OnInit {
   ngOnInit() {
     if (!sessionStorage.getItem("userhash"))
       this.router.navigate(["signup"]);
+    this.username = sessionStorage.getItem("username")
     if(this.holochainservice.hcConnection.state == 2)
       this.errorMessage = "Holochain is disconnected"
+    try{
+      this.balance = this.mybalance.watch().valueChanges.pipe(map(result=>{
+        if (result.errors){
+          this.errorMessage = result.errors[0].message
+          return null
+        }
+        if (!result.data)
+          return null
+        else
+          return result.data.balance
+        }))
+    } catch(exception){
+      this.errorMessage = exception
+    }
     //this.user = new User(sessionStorage.getItem("userhash"),sessionStorage.getItem("username"))
     //this.user.avatarURL = sessionStorage.getItem("avatar")
   }

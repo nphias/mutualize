@@ -12,7 +12,7 @@ export interface Transaction {
   debtor: Agent
   creditor: Agent
   amount: number
-  timestamp: Date
+  timestamp: number
 }
 
 export interface Response {

@@ -1,4 +1,4 @@
- <div class="col-md-9" style="margin: auto;">
+ <div class="col-md-12" style="margin: auto;">
   <div style="color:red">{{errorMessage}}</div>
     <div class="panel panel-default">
       <div class="panel-body">
@@ -16,18 +16,11 @@
            
             <tbody>
                 <tr *ngFor='let tran of (transactionlist | async)'>
-                  <th scope="row"><a routerLink="/profile/{{ tran.id }}" routerLinkActive="active">
-                    <img
-                      class="photo-profile"
-                      src="../assets/img/avatar_placeholder.jpg"
-                      width="40"
-                      height="40"
-                      alt="..."
-                    />
-                  </a></th>
-                  <td>{{tran.debitor}}</td>
+                  <td>{{tran.id}}</td>
+                  <td>{{tran.debtor.username}}</td>
+                  <td>{{tran.creditor.username}}</td>
                   <td>{{tran.amount}}</td>
-                  <td>01/01/2020</td>
+                  <td>{{tran.timestamp}}</td>
                 </tr>
             </tbody>
           </table>

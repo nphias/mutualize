@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ng-graphql-hc-starter": {
+    "mutualize": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/social-graph",
+            "outputPath": "dist/mutualize",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -60,24 +60,35 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "dev2": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev2.ts"
+                }
+              ]
             }
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ng-graphql-hc-starter:build"
+            "browserTarget": "mutualize:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "ng-graphql-hc-starter:build:production"
+              "browserTarget": "mutualize:build:production"
+            },
+            "dev2": {
+              "browserTarget": "mutualize:build:dev2"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ng-graphql-hc-starter:build"
+            "browserTarget": "mutualize:build"
           }
         },
         "lint": {
@@ -93,5 +104,5 @@
         }
       }
     }},
-  "defaultProject": "social-graph"
+  "defaultProject": "mutualize"
 }

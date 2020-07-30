@@ -5,9 +5,9 @@ ui_interfaces = []
 
 [[agents]]
 id = 'hc-run-agent'
-keystore_file = 'thomas.key'
-name = 'thomas'
-public_address = 'HcScjsR4AVE6T4bxaoruYeh6ybPeyjgdvuvnW7Y4PQYfgntgUmwZSqpH5gwrutr'
+keystore_file = 'roberto.key'
+name = 'testAgent'
+public_address = 'HcScJ3nziT6NPxn8i7EOAgd9nhpkhugmozISNBnuks6ti8ppdx6gK4du39Xjjra'
 test_agent = false
 
 [[dnas]]
@@ -31,7 +31,7 @@ id = 'websocket-interface'
 id = 'test-instance'
 
 [interfaces.driver]
-port = 9999
+port = 9998
 type = 'websocket'
 
 [logger]

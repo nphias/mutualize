@@ -1,12 +1,13 @@
 {
-  "name": "social-graph",
-  "repository": "https://github.com/LunarPunk-Labs/social-graph",
+  "name": "mutualize",
+  "repository": "https://github.com/nphias/mutualize",
   "license": "MIT",
   "version": "0.0.1",
   "author": "nphias",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start2": "ng serve -c=dev2 --port 4201",  
     "build": "ng build",
     "lint": "ng lint"
   },

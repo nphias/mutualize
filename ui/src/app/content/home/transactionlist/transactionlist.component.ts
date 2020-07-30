@@ -26,8 +26,10 @@ export class TransactionListComponent implements OnInit {
         }
         if (!result.data)
           return null
-        else
-          return result.data.transactions
+        else{
+          console.log(result.data.transactions)
+          return result.data.transactions//.map(tx=> <Transaction>{id:tx.id,debtor:tx.debtor,creditor:tx.creditor,amount:tx.amount,timestamp:(new Date(tx.timestamp))})
+        }
       }))
     } catch(exception){
         this.errorMessage = exception

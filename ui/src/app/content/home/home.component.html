@@ -6,8 +6,9 @@
     id="sidebarToggle"
     href="#"
   >
-    <i class="fas fa-bars">toggle button</i>
+    <i class="fas fa-bars"></i>
   </button>
+  <div class="col-md-4 btn btn-link btn-sm text-white order-1 order-sm-0" *ngIf="username" >Logged in as: <b>{{username}}</b></div>
 
   <!-- Navbar Search -->
   <form

@@ -1,10 +1,17 @@
 import { Component, OnInit } from "@angular/core";
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from "@angular/router";
 import { AllAgentsGQL,Agent } from 'src/app/graphql/queries/all-agents-gql';
-import { CreateOfferGQL } from 'src/app/graphql/queries/create-offer-gql';
-import { FormBuilder, Validators } from '@angular/forms';
+import { CreateOfferGQL } from 'src/app/graphql/queries/offer-mutations-gql';
+import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+
+interface offerRow
+{
+  id:string,
+  username:string,
+  amount:number
+} 
 
 @Component({
   selector: "app-userlist",
@@ -14,39 +21,63 @@ import { FormBuilder, Validators } from '@angular/forms';
 export class UserListComponent implements OnInit {
   agentlist: Observable<Agent[]>;
   errorMessage:string
-  offerForm = this.fb.group({
-    id: ["", Validators.required],
-    username: ["", Validators.required],
-    amount: ["", Validators.required]
-  });
+  userForm: FormGroup
+  agentSubscription: Subscription
 
-  constructor(private agents: AllAgentsGQL, 
+  constructor(
+    private agents: AllAgentsGQL, 
     private offer: CreateOfferGQL, 
     private router: Router,
     private fb: FormBuilder
-    ) {}
+    ) { 
+  }
 
   ngOnInit() {
+    this.userForm = this.fb.group({
+      Rows : this.fb.array([])
+    });
     try {
       this.agentlist = this.agents.watch().valueChanges.pipe(map(result=>{
-        if (!result.errors){
-          //this.offerForm.setValue(''); 
-          return result.data.allAgents.map(agent => <Agent>{id:agent.id, username:agent.username})
-        }
+        if (!result.errors)
+          return result.data.allAgents.map(agent => {
+            if (agent.id != sessionStorage.getItem("userhash"))
+              return <Agent>{id:agent.id, username:agent.username}})
         this.errorMessage = result.errors[0].message
         return null
       }))
     } catch(exception){
         this.errorMessage = exception
     }
+    this.agentSubscription = this.agentlist.subscribe(agents => { this.populateForm(agents)})
   }
 
-  createOffer(){
-    const credid =  "HcScjN8wBwrn3tuyg89aab3a69xsIgdzmX5P9537BqQZ5A7TEZu7qCY4Xzzjhma" //this.offerForm.get("id").value
-    const c_amount = 100 //this.offerForm.get("amount").value
+  ngOnDestroy(){
+    this.agentSubscription.unsubscribe()
+  }
+
+  get formArr() {
+    return this.userForm.get("Rows") as FormArray;
+  }
+
+  populateForm(agentlist: Agent[]){
+    for (let i = 0; i < agentlist.length; i++ ) {
+        this.formArr.push(
+          this.fb.group({
+            id: this.fb.control(agentlist[i].id),
+            username: this.fb.control(agentlist[i].username),
+            amount: this.fb.control(0)
+          })
+        )
+      }
+  }
+
+  createOffer(data:offerRow){
+    console.log(data)
     try {
-      const result = this.offer.mutate({creditorId:credid,amount:c_amount})//.toPromise()//.then(()=>{
+      const result = this.offer.mutate({creditorId:data.id,amount:data.amount}).toPromise().then(result => {
       console.log(result)
+      this.router.navigate(["offers"]);
+    })
     } catch(exception){
         this.errorMessage = exception
     }

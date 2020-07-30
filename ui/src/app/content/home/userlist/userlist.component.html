@@ -1,9 +1,10 @@
- <div  style="margin: auto;">
+ <div class="col-md-12" style="margin: auto;">
   <div style="color:red">{{errorMessage}}</div>
     <div class="panel panel-default">
       <div class="panel-body">
-        <form [formGroup]="offerForm" (ngSubmit)="createOffer()">
+        <form *ngIf="formArr.controls" [formGroup]="userForm">
           <section class="post-footer-comment-wrapper">
+        
             <table class="table">
               <thead class="thead-light">
                 <tr>
@@ -14,12 +15,13 @@
                 </tr>
               </thead>
             
-              <tbody>
-                  <tr *ngFor='let agent of (agentlist | async)'>
-                    <td><label>{{agent.id}}</label><input type="hidden" ></td>
-                    <td><label>{{agent.username}}</label></td>
-                    <td><input placeholder="100" formControlName="amount"/></td>
-                    <td><button>create offer</button></td>
+              <tbody formArrayName="Rows">
+                  <tr *ngFor="let itemrow of formArr.controls; let i=index;"
+                  [formGroupName]="i">
+                    <td><input formControlName="id" type="hidden"/><label class="small_label">{{formArr.value[i].id}}</label></td>
+                    <td><label>{{formArr.value[i].username}}</label></td>
+                    <td><input type="number" placeholder="0" formControlName="amount"/></td>
+                    <td><button (click)="createOffer(itemrow.value)">create offer</button></td>
                   </tr>
               </tbody>
             </table>

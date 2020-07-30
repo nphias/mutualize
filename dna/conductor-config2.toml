@@ -5,8 +5,8 @@ ui_interfaces = []
 
 [[agents]]
 id = 'hc-run-agent'
-keystore_file = 'roberto.key'
-name = 'testAgent'
+keystore_file = 'player2.key'
+name = 'agent2'
 public_address = 'HcScJ3nziT6NPxn8i7EOAgd9nhpkhugmozISNBnuks6ti8ppdx6gK4du39Xjjra'
 test_agent = false
 

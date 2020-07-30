@@ -1,14 +1,16 @@
 {
-  "name": "Holochain App Name",
-  "description": "A Holochain app",
+  "name": "Mutualize",
+  "description": "A Holochain app for Asset backed mutual credit",
   "authors": [
     {
-      "identifier": "Author Name <author@name.com>",
+      "identifier": "Nphias<nphias@gmail.com>",
       "public_key_source": "",
       "signature": ""
     }
   ],
   "version": "0.1.0",
   "dht": {},
-  "properties": null
+  "properties":{
+    "assetname": "none"
+  }
 }

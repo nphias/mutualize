@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   INSTANCE_NAME: "test-instance",
-  HOST_URL:'ws://localhost:9998'
+  HOST_URL:'ws://localhost:8889'
 };
 
 /*

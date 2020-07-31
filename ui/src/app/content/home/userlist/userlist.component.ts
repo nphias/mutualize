@@ -39,9 +39,7 @@ export class UserListComponent implements OnInit {
     try {
       this.agentlist = this.agents.watch().valueChanges.pipe(map(result=>{
         if (!result.errors)
-          return result.data.allAgents.map(agent => {
-            if (agent.id != sessionStorage.getItem("userhash"))
-              return <Agent>{id:agent.id, username:agent.username}})
+          return result.data.allAgents.map(agent => <Agent>{id:agent.id, username:agent.username})
         this.errorMessage = result.errors[0].message
         return null
       }))
@@ -61,6 +59,7 @@ export class UserListComponent implements OnInit {
 
   populateForm(agentlist: Agent[]){
     for (let i = 0; i < agentlist.length; i++ ) {
+      if (agentlist[i].id != sessionStorage.getItem("userhash")){
         this.formArr.push(
           this.fb.group({
             id: this.fb.control(agentlist[i].id),
@@ -69,6 +68,7 @@ export class UserListComponent implements OnInit {
           })
         )
       }
+    }
   }
 
   createOffer(data:offerRow){

@@ -1,8 +1,8 @@
-# mutualize
+# Mutualize
 
 Mutualize is a mutual credit app that lets you create you own assets and exchange credits with others on the network
 comprising of the following zomes
-1. transactor for mutual credit  Design: https://hackmd.io/X9KFfDJZRS2vL9uLOq1oAg?both
+1. transactor for mutual credit  Design: https://hackmd.io/X9KFfDJZRS2vL9uLOq1oAg
 2. profiles for registration
 
 

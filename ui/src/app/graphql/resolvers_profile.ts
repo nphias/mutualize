@@ -52,5 +52,10 @@ export const resolvers_profile = {
         username,
       };
     },
+    async deleteUsername(_, {}, connection) {
+      if (connection.state == 2)
+        return new GraphQLError("Holochain is disconnected")
+      return connection.call(INSTANCE_NAME, ZOME_NAME,'delete_my_username', {});
+    }
   },
 };

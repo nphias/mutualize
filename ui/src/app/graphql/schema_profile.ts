@@ -16,5 +16,6 @@ export const schema_profile = `
   }
   type Mutation {
     setUsername(username: String!): Agent!
+    deleteUsername(name:String!): Boolean!
   }
 `;

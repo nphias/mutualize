@@ -27,10 +27,9 @@ comprising of the following zomes
 
 5. Run an instance of your DNA, using the supplied conductor configuration and agent key:
     ```
-    $ holochain -c conductor-config.toml
+    $ holochain -c conductor-config1.toml
     ```
     The agent keys and their hashes are included.
-
 
     If you get an error message like this:
 
@@ -44,7 +43,7 @@ comprising of the following zomes
     $ hc hash
     ```
 
-    then editing the `conductor-config.toml`:
+    then editing the `conductor-config1.toml`:
 
     1. Find the section labeled `[[dnas]]`.
     2. Replace the value of `hash` with the value reported by `hc hash`.
@@ -61,14 +60,14 @@ comprising of the following zomes
 
     you will need 5 terminal tabs with 3 in nix-shell
     1. sim2h server (nix-shell) cmd: sim2h_server
-    2. conductor1 (nix-shell) cmd: holochain -c conductor-config.toml
+    2. conductor1 (nix-shell) cmd: holochain -c conductor-config1.toml
     3. conductor2 (nixshell) cmd: holochain -c conductor-config2.toml
     4. UI1 cmd: npm start (inside UI dir)
     5. UI2 cmd: npm run start2 (inside UI dir)
 
 * **Collaborate with friends.** This takes a little extra configuration and works best on a LAN.
 
-    1. On the first participant's machine, follow the instructions above to get the sim2h server and first conductor running with `conductor-config.toml`. Take note of the first participant's IP address.
+    1. On the first participant's machine, follow the instructions above to get the sim2h server and first conductor running with `conductor-config1.toml`. Take note of the first participant's IP address.
     2. On the second participant's machine, edit the `conductor-config2.toml` file:
 
         - Look for the `[network]` section and change the hostname in the value of `sim2h_url` to the first participant's machine's IP address.

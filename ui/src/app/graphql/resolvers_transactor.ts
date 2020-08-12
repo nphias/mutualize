@@ -1,8 +1,15 @@
 import { environment } from '@environment';
 import {GraphQLError} from 'graphql'
+//import { Observable, from } from 'rxjs';
+import asyncify from 'callback-to-async-iterator';
 
 const ZOME_NAME = "transactor"
 const INSTANCE_NAME = environment.INSTANCE_NAME
+
+function checkConnection(connection){
+  if (connection.state == 2)
+  throw new GraphQLError("Holochain is disconnected")
+}
 
 function offerToTransaction(id, offer) {
   const state = offer.state;
@@ -93,7 +100,7 @@ export const resolvers_transactor = {
   },
   Mutation: {
     async createOffer(_, { creditorId, amount }, connection) {
-
+      checkConnection(connection)
       return connection.call(INSTANCE_NAME, ZOME_NAME, 'create_offer', {
         creditor_address: creditorId,
         amount,
@@ -102,28 +109,31 @@ export const resolvers_transactor = {
     },
     async acceptOffer(_, { transactionId, approvedHeaderId }, connection) {
 
-      await connection.call(INSTANCE_NAME, ZOME_NAME, 'accept_offer', {
+      return connection.call(INSTANCE_NAME, ZOME_NAME, 'accept_offer', {
         transaction_address: transactionId,
         approved_header_address: approvedHeaderId,
       });
-
-      return transactionId;
     },
     async consentForOffer(_, { transactionId }, connection) {
 
-      await connection.call(INSTANCE_NAME, ZOME_NAME, 'consent_for_offer', {
+      return connection.call(INSTANCE_NAME, ZOME_NAME, 'consent_for_offer', {
         transaction_address: transactionId,
       });
-
-      return transactionId;
     },
     async cancelOffer(_, { transactionId }, connection) {
 
-      await connection.call(INSTANCE_NAME, ZOME_NAME, 'cancel_offer', {
+      return connection.call(INSTANCE_NAME, ZOME_NAME, 'cancel_offer', {
         transaction_address: transactionId,
       });
-
-      return transactionId;
     },
   },
+ Subscription: {
+  async offerReceived(_, __, connection) {
+    checkConnection(connection)
+      subscribe: () => asyncify(connection.onSignal('offer-received', ({ transaction_address }) => {
+            console.log(transaction_address)
+            return transaction_address //({offerReceived:"pop"}) 
+        }))
+    } 
+ }
 };

@@ -14,6 +14,10 @@ export class HolochainService {
         })
         try{
             await this.hcConnection.ready()//.then((result)=>{
+           // this.hcConnection.onSignal('offer-received', ({ transaction_address }) => {
+             // console.log("signal callback:",transaction_address)
+            //})
+              //this.hcConnection.onSignal()
         }catch(error){
             console.log("Holochain connection failed:"+error)
         }

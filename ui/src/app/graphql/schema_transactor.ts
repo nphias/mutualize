@@ -53,4 +53,8 @@ export const schema_transactor = `
     cancelOffer(transactionId: ID!): ID!
     acceptOffer(transactionId: ID!, approvedHeaderId: ID!): ID!
   }
+
+  type Subscription {
+    offerReceived: ID
+  }
 `;

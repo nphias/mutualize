@@ -128,12 +128,16 @@ export const resolvers_transactor = {
     },
   },
  Subscription: {
-  async offerReceived(_, __, connection) {
+  offerReceived(_, __, connection) {
     checkConnection(connection)
-      subscribe: () => asyncify(connection.onSignal('offer-received', ({ transaction_address }) => {
-            console.log(transaction_address)
-            return transaction_address //({offerReceived:"pop"}) 
-        }))
-    } 
+    offerReceived:{
+      subscribe: () => { const sub1 = connection.onSignal('offer-received', ({ transaction_address }) => {
+                          console.log(transaction_address)
+                          return transaction_address //({offerReceived:"pop"}) 
+                         })
+                         asyncify(sub1) 
+                      }
+    }
+  } 
  }
 };

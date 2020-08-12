@@ -6,6 +6,7 @@ import { MyOffersGQL,Offer } from 'src/app/graphql/queries/myoffers-gql';
 import { ValidateOfferGQL } from 'src/app/graphql/queries/validate-offer-gql';
 import { AcceptOfferGQL,ConsentOfferGQL,CancelOfferGQL } from 'src/app/graphql/queries/offer-mutations-gql';
 import { ReceivedOffersGQL } from 'src/app/graphql/queries/offer-subscriptions-gql';
+import { SubscriptionResult } from 'apollo-angular';
 
 
 @Component({
@@ -17,7 +18,7 @@ export class OfferListComponent {
   pendingOffers: Observable<Offer[]>;
   validOffer: Observable<Offer>;
   offerSubscription: Subscription
-  newOffersSubscription: Subscription
+  newOffersSubscription: Observable<SubscriptionResult<any>>
   errorMessage:string
 
   constructor(
@@ -31,7 +32,8 @@ export class OfferListComponent {
   }
 
   ngOnInit() {
-    this.newOffersSubscription = this.onNewOffer.subscribe().subscribe(result =>{
+    this.newOffersSubscription = this.onNewOffer.subscribe()
+    this.newOffersSubscription.subscribe(result =>{
       console.log("offer subscription result",result)
     })
     try {

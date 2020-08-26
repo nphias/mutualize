@@ -3,6 +3,11 @@
   "description": "A Holochain app for Asset backed mutual credit",
   "authors": [
     {
+      "identifier": "guillem@gmail.com",
+      "public_key_source": "",
+      "signature": "Guillem Cordoba"
+    },
+    {
       "identifier": "Nphias<nphias@gmail.com>",
       "public_key_source": "",
       "signature": "ThomasCal"
@@ -11,6 +16,5 @@
   "version": "0.1.0",
   "dht": {},
   "properties":{
-    "assetname": "none"
   }
 }

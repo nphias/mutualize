@@ -5,6 +5,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { SignupComponent } from './signup/signup.component';
 import { ProfileComponent } from "./profile/profile.component";
 import { OfferComponent } from "./offer/offer.component";
+import { AssetComponent } from "./assets/asset.component";
 
 // Import all the components for which navigation service has to be activated
 import { HomeComponent } from './home/home.component';
@@ -24,6 +25,10 @@ const routes: Routes = [
   {
     path: 'offers',
     component: OfferComponent
+  },
+  {
+    path: 'assets',
+    component: AssetComponent
   },
   {
     path: "profile",

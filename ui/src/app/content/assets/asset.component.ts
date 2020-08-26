@@ -1,9 +1,6 @@
 import { Component, OnInit, Input } from "@angular/core";
-//import { ConnectionService } from "../../core/connection.service";
 import { FormBuilder } from "@angular/forms";
 import { Validators } from "@angular/forms";
-
-//import { User } from "../../models/User";
 import { Router } from "@angular/router";
 import { HolochainService } from 'src/app/core/holochain.service';
 import { MyBalanceGQL } from 'src/app/graphql/queries/mybalance-gql';
@@ -12,11 +9,11 @@ import { Observable } from 'rxjs';
 
 
 @Component({
-  selector: "app-offer",
-  templateUrl: "./offer.component.html",
-  styleUrls: ["./offer.component.css"]
+  selector: "app-asset",
+  templateUrl: "./asset.component.html",
+  styleUrls: ["./asset.component.css"]
 })
-export class OfferComponent implements OnInit {
+export class AssetComponent implements OnInit {
   balance: Observable<number>;
   errorMessage:string = ""
   username: string

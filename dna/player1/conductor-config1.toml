@@ -4,21 +4,21 @@ ui_bundles = []
 ui_interfaces = []
 
 [[agents]]
-id = 'hc-run-agent'
+id = 'mutual-agent'
 keystore_file = 'player1.key'
 name = 'agent1'
 public_address = 'HcScjsR4AVE6T4bxaoruYeh6ybPeyjgdvuvnW7Y4PQYfgntgUmwZSqpH5gwrutr'
 test_agent = false
 
 [[dnas]]
-file = './dist/dna.dna.json'
-hash = 'QmXu9jmPpbtDkBPh8zkk7YUDnWtvPzK9ksTjMteybvCmDv'
-id = 'hc-run-dna'
+file = '../dist/dna.dna.json'
+hash = 'QmaYiSmKoyiT9za4HPGoviqp3N4VCBrYX3TfwTs6g2v3zt'
+id = 'mutualize'
 
 [[instances]]
-agent = 'hc-run-agent'
-dna = 'hc-run-dna'
-id = 'test-instance'
+agent = 'mutual-agent'
+dna = 'mutualize'
+id = 'mutual-instance'
 
 [instances.storage]
 type = 'memory'
@@ -28,7 +28,7 @@ admin = true
 id = 'websocket-interface'
 
 [[interfaces.instances]]
-id = 'test-instance'
+id = 'mutual-instance'
 
 [interfaces.driver]
 port = 8888
@@ -42,7 +42,7 @@ type = 'debug'
 rules = []
 
 [network]
-sim2h_url = 'ws://localhost:9000'
+sim2h_url = 'ws://192.168.0.19:9000'
 type = 'sim2h'
 
 [passphrase_service]

@@ -1,0 +1,35 @@
+<div class="col-md-12" style="margin: auto;">
+  <div style="color:red">{{errorMessage}}</div>
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <form *ngIf="formArr.controls" [formGroup]="userForm">
+          <section class="post-footer-comment-wrapper">
+        
+            <table class="table">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Keywords</th>
+                  <th scope="col">Unit of account</th>
+                  <th scope="col">Validations</th>
+                  <th scope="col"><button (click)="createAsset(null)">create new</button></th>
+                </tr>
+              </thead>
+            
+              <tbody formArrayName="Rows">
+                  <tr *ngFor="let itemrow of formArr.controls; let i=index;"
+                  [formGroupName]="i">
+                    <td><input formControlName="id" type="hidden"/><label class="small_label">{{formArr.value[i].id}}</label></td>
+                    <td><label>{{formArr.value[i].username}}</label></td>
+                    <td><input type="number" placeholder="0" formControlName="amount"/></td>
+                    <td><button (click)="createOffer(itemrow.value)">create offer</button></td>
+                  </tr>
+              </tbody>
+            </table>
+          </section>
+        </form>
+        <br />
+      </div>
+    </div>
+  </div>

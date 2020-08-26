@@ -12,8 +12,12 @@ import { ProfileComponent } from "./profile/profile.component";
 import { OfferComponent } from "./offer/offer.component";
 import { OfferListComponent } from "./offer/offerlist/offerlist.component";
 import { UserListComponent } from "./home/userlist/userlist.component";
+import { HeaderComponent } from "./common/header/header.component"
+import { AssetComponent } from "./assets/asset.component";
+import { AssetListComponent } from "./assets/assetlist/assetlist.component";
 
 
+ 
 @NgModule({
   declarations: [
     HomeComponent,
@@ -22,7 +26,10 @@ import { UserListComponent } from "./home/userlist/userlist.component";
     ProfileComponent,
     OfferComponent,
     OfferListComponent,
-    UserListComponent
+    UserListComponent,
+    HeaderComponent,
+    AssetComponent,
+    AssetListComponent
   ],
   imports: [
     CommonModule,

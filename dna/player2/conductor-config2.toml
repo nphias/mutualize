@@ -12,7 +12,7 @@ test_agent = false
 
 [[dnas]]
 file = './dist/dna.dna.json'
-hash = 'QmXu9jmPpbtDkBPh8zkk7YUDnWtvPzK9ksTjMteybvCmDv'
+hash = 'QmaYiSmKoyiT9za4HPGoviqp3N4VCBrYX3TfwTs6g2v3zt'
 id = 'hc-run-dna'
 
 [[instances]]

@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from "@angular/router";
-import { MyTransactionsGQL,Transaction } from 'src/app/graphql/queries/mytransactions-gql';
+import { MyTransactionsGQL,Transaction } from 'src/app/graphql/transactor/queries/mytransactions-gql';
 
 @Component({
   selector: "app-transactionlist",

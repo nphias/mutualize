@@ -1,17 +1,20 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Router } from "@angular/router";
-import { AllAgentsGQL,Agent } from 'src/app/graphql/queries/all-agents-gql';
-import { CreateOfferGQL } from 'src/app/graphql/queries/offer-mutations-gql';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { HolochainService } from 'src/app/core/holochain.service'
+import { HolochainService, cloneResult } from 'src/app/core/holochain.service'
+import { CloneIn, RegisterCloneGQL } from 'src/app/graphql/clone-tracker/queries/register-clone-gql';
+import { environment } from '@environment';
+import { Clone,AllClonesGQL } from 'src/app/graphql/clone-tracker/queries/all-clones-gql';
 
-interface offerRow
+interface cloneRow
 {
   id:string,
-  username:string,
-  amount:number
+  name:string,
+  description:string,
+  keywords:string,
+  unit_of_account:string,
+  members:number
 } 
 
 @Component({
@@ -20,79 +23,116 @@ interface offerRow
   styleUrls: ["./assetlist.component.css"]
 })
 export class AssetListComponent implements OnInit {
-  agentlist: Observable<Agent[]>;
+  clonelist: Observable<Clone[]>;
   errorMessage:string
-  userForm: FormGroup
-  agentSubscription: Subscription
+  assetForm: FormGroup
+  showModal: boolean;
+  newAssetForm: FormGroup;
+  submitted = false;
+  cloneSubscription: Subscription
 
   constructor(
-    private agents: AllAgentsGQL, 
-    private offer: CreateOfferGQL, 
-    private router: Router,
+    private add_clone: RegisterCloneGQL,
+    private clones: AllClonesGQL, 
     private fb: FormBuilder,
     private hcs: HolochainService
     ) { 
   }
 
   ngOnInit() {
-    this.userForm = this.fb.group({
+    this.assetForm = this.fb.group({
       Rows : this.fb.array([])
     });
-    try {
-      this.agentlist = this.agents.watch().valueChanges.pipe(map(result=>{
+    this.newAssetForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      description: ['', [Validators.required, Validators.minLength(3)]],
+      keywords: ['', []],
+      unit_of_account: ['', [Validators.required]]
+    });
+    try{
+      this.clonelist = this.clones.watch({template_dna:environment.TEMPLATE_HASH}).valueChanges.pipe(map(result=>{
         if (!result.errors)
-          return result.data.allAgents.map(agent => <Agent>{id:agent.id, username:agent.username})
+          return result.data.allClones.map(c => <Clone>{
+            parent_dna_hash:c.parent_dna_hash,
+            properties:JSON.parse(c.properties),
+            cloned_dna_hash:c.cloned_dna_hash})
         this.errorMessage = result.errors[0].message
         return null
       }))
-    } catch(exception){
-        this.errorMessage = exception
+    }catch(exception){
+      this.errorMessage = exception
     }
-    this.agentSubscription = this.agentlist.subscribe(agents => { this.populateForm(agents)})
+    this.cloneSubscription = this.clonelist.subscribe(clones => { this.populateForm(clones)})
   }
 
   ngOnDestroy(){
-    this.agentSubscription.unsubscribe()
+    this.cloneSubscription.unsubscribe()
   }
 
   get formArr() {
-    return this.userForm.get("Rows") as FormArray;
+    return this.assetForm.get("Rows") as FormArray;
   }
+  get fa() { return this.newAssetForm.controls; }
 
-  populateForm(agentlist: Agent[]){
-    for (let i = 0; i < agentlist.length; i++ ) {
-      if (agentlist[i].id != sessionStorage.getItem("userhash")){
-        this.formArr.push(
-          this.fb.group({
-            id: this.fb.control(agentlist[i].id),
-            username: this.fb.control(agentlist[i].username),
-            amount: this.fb.control(0)
-          })
-        )
-      }
-    }
+  show(){
+    this.showModal = true; // Show-Hide Modal Check
+    
   }
-
-  createOffer(data:offerRow){
-    console.log(data)
-    try {
-      const result = this.offer.mutate({creditorId:data.id,amount:data.amount}).toPromise().then(result => {
-      console.log(result)
-      this.router.navigate(["offers"]);
-    })
-    } catch(exception){
-        this.errorMessage = exception
-    }
-  }
-//static now for testing
-  createAsset(data:offerRow){
-    this.hcs.cloneDNA( 
-      "mutual-agent",//sessionStorage.getItem("userhash"),
-      "new_mutual_instance", //data.id+"_instance",
-      {name:"interstellar", unit_of_account:"km"}
-      //{name:data.username, unit_of_account:data.amount}
-    );
+  hide(){
+    this.showModal = false;
   }
   
 
+  populateForm(clonelist: Clone[]){
+    for (let i = 0; i < clonelist.length; i++ ) {
+        this.formArr.push(
+          this.fb.group({
+            id: this.fb.control(clonelist[i].cloned_dna_hash),
+            name: this.fb.control(clonelist[i].properties['name']),
+            description: this.fb.control(clonelist[i].properties['description']),
+            keywords: this.fb.control(clonelist[i].properties['keywords']),
+            unit_of_account: this.fb.control(clonelist[i].properties['unit_of_account']),
+            members: this.fb.control(0)
+          })
+        )
+      //}
+    }
+  }
+
+  async join(){}
+
+
+  async createAsset(){
+    this.submitted = true;
+    if (this.newAssetForm.invalid)
+      return;
+    this.showModal = false;
+    const props = this.newAssetForm.getRawValue()
+    props["parent_dna"] = environment.TEMPLATE_HASH
+    //const props = {name:"car_share", description:"mutual credit for car people", keywords:"car,ride",unit_of_account:"km"}
+    const result:cloneResult = await this.hcs.cloneDna( 
+      "interstellar_"+Date.now(),
+      props
+    );
+    if (result.success){
+      const clone:CloneIn = {
+        parent_dna_hash: environment.TEMPLATE_HASH,
+        properties:JSON.stringify(props),
+        cloned_dna_hash: result.dna_hash
+      }
+      this.formArr.clear()
+      try {
+        const newclone = await this.add_clone.mutate(
+          {clone:clone}, 
+          {refetchQueries: [{
+                query: this.clones.document,
+                variables: {template_dna:environment.TEMPLATE_HASH}
+              }]
+          }).toPromise()
+      }catch(exception){
+        this.errorMessage = exception
+      }
+    }
+  }
+  
 }

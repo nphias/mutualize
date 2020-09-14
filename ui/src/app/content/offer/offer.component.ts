@@ -6,7 +6,7 @@ import { Validators } from "@angular/forms";
 //import { User } from "../../models/User";
 import { Router } from "@angular/router";
 import { HolochainService } from 'src/app/core/holochain.service';
-import { MyBalanceGQL } from 'src/app/graphql/queries/mybalance-gql';
+import { MyBalanceGQL } from 'src/app/graphql/transactor/queries/mybalance-gql';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 

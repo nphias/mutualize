@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from "@angular/core";
 //import { ConnectionService } from "../../core/connection.service";
 import { FormBuilder } from "@angular/forms";
 import { Validators } from "@angular/forms";
-import { Agent } from "src/app/graphql/queries/myprofile-gql"
+import { Agent } from "src/app/graphql/profile/queries/myprofile-gql"
 import { Router } from "@angular/router";
 import { HolochainService } from 'src/app/core/holochain.service';
 

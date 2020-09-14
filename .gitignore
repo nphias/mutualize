@@ -4,6 +4,7 @@ dna/.cargo/
 dna/dist
 dna/zomes/transactor/code/target
 dna/zomes/profiles/code/target
+dna/zomes/cloned-dnas-tracker/code/target
 dna/player1/dna
 dna/player1/storage
 dna/player1/conductor-config.toml

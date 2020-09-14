@@ -2,10 +2,10 @@ import { Component, OnInit } from "@angular/core";
 import { Observable,Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from "@angular/router";
-import { MyOffersGQL,Offer } from 'src/app/graphql/queries/myoffers-gql';
-import { ValidateOfferGQL } from 'src/app/graphql/queries/validate-offer-gql';
-import { AcceptOfferGQL,ConsentOfferGQL,CancelOfferGQL } from 'src/app/graphql/queries/offer-mutations-gql';
-import { ReceivedOffersGQL } from 'src/app/graphql/queries/offer-subscriptions-gql';
+import { MyOffersGQL,Offer } from 'src/app/graphql/transactor/queries/myoffers-gql';
+import { ValidateOfferGQL } from 'src/app/graphql/transactor/queries/validate-offer-gql';
+import { AcceptOfferGQL,ConsentOfferGQL,CancelOfferGQL } from 'src/app/graphql/transactor/queries/offer-mutations-gql';
+import { ReceivedOffersGQL } from 'src/app/graphql/transactor/queries/offer-subscriptions-gql';
 import { SubscriptionResult } from 'apollo-angular';
 
 

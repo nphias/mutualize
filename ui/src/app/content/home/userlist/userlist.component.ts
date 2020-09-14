@@ -2,8 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from "@angular/router";
-import { AllAgentsGQL,Agent } from 'src/app/graphql/queries/all-agents-gql';
-import { CreateOfferGQL } from 'src/app/graphql/queries/offer-mutations-gql';
+import { AllAgentsGQL,Agent } from 'src/app/graphql/profile/queries/all-agents-gql';
+import { CreateOfferGQL } from 'src/app/graphql/transactor/queries/offer-mutations-gql';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 
 interface offerRow

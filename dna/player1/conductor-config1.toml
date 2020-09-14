@@ -12,7 +12,7 @@ test_agent = false
 
 [[dnas]]
 file = '../dist/dna.dna.json'
-hash = 'QmaYiSmKoyiT9za4HPGoviqp3N4VCBrYX3TfwTs6g2v3zt'
+hash = 'Qmf6LZZTNwakq739EfCMJjzrr7cGzD9pWTgm8sNMebMGjA'
 id = 'mutualize'
 
 [[instances]]

@@ -6,6 +6,11 @@ export type Dictionary<T> = {
   [key: string]: T;
 }
 
+export interface cloneResult {
+"success": boolean, 
+"dna_hash": string 
+}
+
 @Injectable({
   providedIn: "root"
 })
@@ -45,9 +50,50 @@ export class HolochainService {
        // )
     );
     //this should call the new instance
-    const mynewadress = this.hcConnection.call(instanceId,"profiles",'get_my_address', {})
-    console.log(mynewadress)
+    const mynewaddress = this.hcConnection.call(instanceId,"profiles",'get_my_address', {})
+    console.log(mynewaddress)
       return "lol" //newDNAhash
+  }
+
+  async cloneDna(
+    newDnaId: string,
+    properties: any,
+  ): Promise<cloneResult> {
+
+    const dnaResult = await this.hcConnection.callAdmin('admin/dna/install_from_file', {
+      id: newDnaId,
+      path: environment.TEMPLATE_FILE,
+      properties,
+      copy: true,
+    });
+    return dnaResult
+  }
+
+  async changeNetwork (
+    agentId: string,
+    newDnaId: string,
+    newInstanceId: string,
+    templateDnaAddress: string,
+    properties: any,
+    findInterface: (interfaces: Array<any>) => any
+  ) : Promise<void> {
+    const instanceResult = await this.hcConnection.callAdmin('admin/instance/add', {
+      id: newInstanceId,
+      agent_id: agentId,
+      dna_id: newDnaId,
+    });
+
+    const interfaceList = await this.hcConnection.callAdmin('admin/interface/list', {});
+    // TODO: review this: what interface to pick?
+    const iface = findInterface(interfaceList);
+
+    const ifaceResult = this.hcConnection.callAdmin('admin/interface/add_instance', {
+      instance_id: newInstanceId,
+      interface_id: iface.id,
+    });
+
+    await new Promise((resolve) => setTimeout(() => resolve(), 300));
+    const startResult = await this.hcConnection.callAdmin('admin/instance/start', { id: newInstanceId });
   }
 
 

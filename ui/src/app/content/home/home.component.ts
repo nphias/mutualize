@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from "@angular/router";
-import { MyBalanceGQL } from 'src/app/graphql/queries/mybalance-gql';
+import { MyBalanceGQL } from 'src/app/graphql/transactor/queries/mybalance-gql';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { MyProfileGQL } from 'src/app/graphql/queries/myprofile-gql';
+import { MyProfileGQL } from 'src/app/graphql/profile/queries/myprofile-gql';
 
 
 @Component({

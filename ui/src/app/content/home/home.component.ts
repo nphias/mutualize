@@ -4,6 +4,7 @@ import { MyBalanceGQL } from 'src/app/graphql/transactor/queries/mybalance-gql';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { MyProfileGQL } from 'src/app/graphql/profile/queries/myprofile-gql';
+import { HolochainService } from 'src/app/core/holochain.service';
 
 
 @Component({
@@ -14,14 +15,18 @@ import { MyProfileGQL } from 'src/app/graphql/profile/queries/myprofile-gql';
 export class HomeComponent {
   balance: Observable<number>;
   errorMessage:string
-  username: string
+  breadCrumbs: string[]
 
-  constructor(private mybalance:MyBalanceGQL, private me:MyProfileGQL, private router: Router) { }
+  constructor(private mybalance:MyBalanceGQL, private me:MyProfileGQL, private router: Router, private holochainservice: HolochainService) { 
+    
+  }
 
   ngOnInit() {
     if (!sessionStorage.getItem("userhash"))
         this.router.navigate(["signup"]);
-    this.username = sessionStorage.getItem("username")
+    if(this.holochainservice.getConnectionState() == 2)
+        this.errorMessage = "Holochain is disconnected"
+    this.breadCrumbs = this.holochainservice.breadCrumbTrail
     try{
       this.me.fetch().toPromise().then(result=>{
         console.log(result)

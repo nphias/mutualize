@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable, Subscription } from 'rxjs';
+import { Router } from "@angular/router";
 import { map } from 'rxjs/operators';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { HolochainService, cloneResult } from 'src/app/core/holochain.service'
@@ -7,14 +8,16 @@ import { CloneIn, RegisterCloneGQL } from 'src/app/graphql/clone-tracker/queries
 import { environment } from '@environment';
 import { Clone,AllClonesGQL } from 'src/app/graphql/clone-tracker/queries/all-clones-gql';
 
-interface cloneRow
+interface Asset
 {
-  id:string,
-  name:string,
-  description:string,
-  keywords:string,
-  unit_of_account:string,
+  id:string
+  hash:string
+  name:string
+  description:string
+  keywords:string
+  unit_of_account:string
   members:number
+  is_member:boolean
 } 
 
 @Component({
@@ -24,22 +27,28 @@ interface cloneRow
 })
 export class AssetListComponent implements OnInit {
   clonelist: Observable<Clone[]>;
+  allClones: Clone[] 
   errorMessage:string
   assetForm: FormGroup
   showModal: boolean;
   newAssetForm: FormGroup;
   submitted = false;
   cloneSubscription: Subscription
+  parentDNA: string = environment.TEMPLATE_HASH
+  instanceList: string[]
 
   constructor(
     private add_clone: RegisterCloneGQL,
-    private clones: AllClonesGQL, 
+    private clones: AllClonesGQL,
     private fb: FormBuilder,
-    private hcs: HolochainService
+    private hcs: HolochainService,
+    private router: Router
     ) { 
   }
 
   ngOnInit() {
+    if (!sessionStorage.getItem("userhash"))
+        this.router.navigate(["signup"]);
     this.assetForm = this.fb.group({
       Rows : this.fb.array([])
     });
@@ -50,7 +59,7 @@ export class AssetListComponent implements OnInit {
       unit_of_account: ['', [Validators.required]]
     });
     try{
-      this.clonelist = this.clones.watch({template_dna:environment.TEMPLATE_HASH}).valueChanges.pipe(map(result=>{
+      this.clonelist = this.clones.watch({template_dna:this.parentDNA}).valueChanges.pipe(map(result=>{
         if (!result.errors)
           return result.data.allClones.map(c => <Clone>{
             parent_dna_hash:c.parent_dna_hash,
@@ -62,7 +71,9 @@ export class AssetListComponent implements OnInit {
     }catch(exception){
       this.errorMessage = exception
     }
-    this.cloneSubscription = this.clonelist.subscribe(clones => { this.populateForm(clones)})
+    this.cloneSubscription = this.clonelist.subscribe(clones => { 
+      this.allClones = clones
+      this.populateForm(clones)})
   }
 
   ngOnDestroy(){
@@ -87,19 +98,21 @@ export class AssetListComponent implements OnInit {
     for (let i = 0; i < clonelist.length; i++ ) {
         this.formArr.push(
           this.fb.group({
-            id: this.fb.control(clonelist[i].cloned_dna_hash),
+            id: this.fb.control(clonelist[i].properties['dna_id']),
+            hash: this.fb.control(clonelist[i].cloned_dna_hash),
             name: this.fb.control(clonelist[i].properties['name']),
             description: this.fb.control(clonelist[i].properties['description']),
             keywords: this.fb.control(clonelist[i].properties['keywords']),
             unit_of_account: this.fb.control(clonelist[i].properties['unit_of_account']),
-            members: this.fb.control(0)
+            members: this.fb.control(0),
+            is_member: this.fb.control(this.hcs.is_instanceMember(clonelist[i].cloned_dna_hash))
           })
         )
       //}
     }
   }
 
-  async join(){}
+
 
 
   async createAsset(){
@@ -108,31 +121,72 @@ export class AssetListComponent implements OnInit {
       return;
     this.showModal = false;
     const props = this.newAssetForm.getRawValue()
-    props["parent_dna"] = environment.TEMPLATE_HASH
-    //const props = {name:"car_share", description:"mutual credit for car people", keywords:"car,ride",unit_of_account:"km"}
-    const result:cloneResult = await this.hcs.cloneDna( 
-      "interstellar_"+Date.now(),
-      props
-    );
-    if (result.success){
-      const clone:CloneIn = {
-        parent_dna_hash: environment.TEMPLATE_HASH,
-        properties:JSON.stringify(props),
-        cloned_dna_hash: result.dna_hash
+    props["parent_dna"] = this.parentDNA
+    try{
+      const dna_id = props.name+"_"+Date.now()
+      const result:cloneResult = await this.hcs.cloneDna( 
+        dna_id, //props.name +"_" + "123",//props.parent_dna,
+        props
+      );
+      if (result.success){
+        props['dna_id'] = dna_id
+        this.formArr.clear()
+        this.add_to_tracker(props,result.dna_hash)
       }
+    }catch(exception){
+      this.errorMessage = exception.message
+    }
+  }
+
+  async join(asset:Asset){
+    console.log(asset)
+    const DNA_ID = asset.id //name+"_"+"123"//this.parentDNA
+    const CELL_ID = asset.hash //name+"_"+asset.id
+    try{
+      await this.hcs.registerNetwork(
+        environment.AGENT_ID, 
+        DNA_ID, 
+        CELL_ID,
+        (interfaces) => {return interfaces[0]}
+      )
+      this.formArr.reset()
+      this.populateForm(this.allClones)
+    } catch(exception){
+      this.errorMessage = exception.message
+    }
+  }
+
+  start(asset:Asset){
+    //const dna_id = this.hcs.dna_from_instance(asset.id)
+    //if(dna_id){
+      this.hcs.startNetwork(asset.hash)
       this.formArr.clear()
+      sessionStorage.removeItem("userhash")
+      this.router.navigate(["signup"]);
+    //}else
+     // console.warn("warning, dna not found for intanceID:"+asset.id)
+  }
+
+  async leave(asset:Asset){}
+
+    
+  private async add_to_tracker(props:any,dna_hash:string){
+      const clone:CloneIn = {
+        parent_dna_hash: this.parentDNA,
+        properties:JSON.stringify(props),
+        cloned_dna_hash: dna_hash
+      }
       try {
         const newclone = await this.add_clone.mutate(
           {clone:clone}, 
           {refetchQueries: [{
                 query: this.clones.document,
-                variables: {template_dna:environment.TEMPLATE_HASH}
+                variables: {template_dna:this.parentDNA}
               }]
           }).toPromise()
       }catch(exception){
         this.errorMessage = exception
       }
     }
-  }
   
 }

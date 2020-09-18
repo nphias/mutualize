@@ -2,7 +2,7 @@
   <div style="color:red">{{errorMessage}}</div>
     <div class="panel panel-default">
       <div class="panel-body">
-        <form *ngIf="formArr.controls" [formGroup]="assetForm">
+        <form class="form" *ngIf="formArr.controls" [formGroup]="assetForm">
           <section class="post-footer-comment-wrapper">
         
             <table class="table">
@@ -20,13 +20,16 @@
               <tbody formArrayName="Rows">
                   <tr *ngFor="let itemrow of formArr.controls; let i=index;"
                   [formGroupName]="i">
-                    <input formControlName="id" type="hidden"/>
+                    <input formControlName="id" type="hidden" value="formArr.value[i].id"/>
+                    <input formControlName="hash" type="hidden" value="formArr.value[i].hash"/>
                     <td><label>{{formArr.value[i].name}}</label></td>
                     <td><label>{{formArr.value[i].description}}</label></td>
                     <td><label>{{formArr.value[i].keywords}}</label></td>
                     <td><label>{{formArr.value[i].unit_of_account}}</label></td>
                     <td><label>{{formArr.value[i].members}}</label></td>
-                    <td><button (click)="join()">Join network</button></td>
+                    <td><button *ngIf="!formArr.value[i].is_member" (click)="join(itemrow.value)">Join network</button>
+                      <button *ngIf="formArr.value[i].is_member" (click)="start(itemrow.value)">Enter network</button>
+                      <button *ngIf="formArr.value[i].is_member" (click)="leave(itemrow.value)">Leave network</button></td>
                   </tr>
               </tbody>
             </table>
@@ -82,7 +85,7 @@
           </form>
       </div>
       <div class="modal-footer">
-          <button type="button" class="btn btn-dark" data-dismiss="modal" (click) = "hide()">Close</button>
+          <button type="button" class="btn btn-dark" data-dismiss="modal" (click) = "hide()">Cancel</button>
       
       </div>
     </div>

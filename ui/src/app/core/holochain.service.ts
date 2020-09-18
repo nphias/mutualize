@@ -11,11 +11,20 @@ export interface cloneResult {
 "dna_hash": string 
 }
 
+export interface cellResult {
+  "id": string, 
+  "dna": string
+  "agent":string 
+  }
+
 @Injectable({
   providedIn: "root"
 })
 export class HolochainService {
-  hcConnection: HolochainConnection
+  private hcConnection: HolochainConnection
+  private instanceList: cellResult[]
+  private breadCrumbStack: string[] = []
+  private CurrentInstanceID: string = environment.DEFAULT_INSTANCE
 
   async init(){
     const hash:string = environment.TEMPLATE_HASH
@@ -32,12 +41,20 @@ export class HolochainService {
          //   console.log("signal callback:",transaction_address)
          // })
             //this.hcConnection.onSignal()
+          this.instanceList = await this.hcConnection.callAdmin('admin/instance/list',{}) // await this.getCells()
+          this.breadCrumbStack.push(environment.DNA_ID)
+          //sessionStorage.setItem("network","genesis")
+            //get list of interfaces here to know which networks user has joined
+            //kill all instances apart from genesis
       }catch(error){
           console.log("Holochain connection failed:"+error)
       }
   }
 
-  async cloneDNA(agentid:string, instanceId:string, properties:object ):Promise<string>{
+  get breadCrumbTrail(){ return this.breadCrumbStack }
+
+
+ /* async cloneDNA(agentid:string, instanceId:string, properties:object ):Promise<string>{
     const instID = instanceId
     const newDNAhash = await this.hcConnection.cloneDna(agentid,
       "myNewDna",
@@ -53,9 +70,9 @@ export class HolochainService {
     const mynewaddress = this.hcConnection.call(instanceId,"profiles",'get_my_address', {})
     console.log(mynewaddress)
       return "lol" //newDNAhash
-  }
+  }*/
 
-  async cloneDna(
+  async cloneDna (
     newDnaId: string,
     properties: any,
   ): Promise<cloneResult> {
@@ -69,20 +86,20 @@ export class HolochainService {
     return dnaResult
   }
 
-  async changeNetwork (
+  async registerNetwork (
     agentId: string,
     newDnaId: string,
     newInstanceId: string,
-    templateDnaAddress: string,
-    properties: any,
+    //templateDnaAddress: string,
+    //properties: any,
     findInterface: (interfaces: Array<any>) => any
   ) : Promise<void> {
     const instanceResult = await this.hcConnection.callAdmin('admin/instance/add', {
       id: newInstanceId,
       agent_id: agentId,
       dna_id: newDnaId,
-    });
-
+    })
+    console.log("instance_add_result:",instanceResult)
     const interfaceList = await this.hcConnection.callAdmin('admin/interface/list', {});
     // TODO: review this: what interface to pick?
     const iface = findInterface(interfaceList);
@@ -91,9 +108,58 @@ export class HolochainService {
       instance_id: newInstanceId,
       interface_id: iface.id,
     });
-
+    console.log("ifaceResult:",ifaceResult)
     await new Promise((resolve) => setTimeout(() => resolve(), 300));
-    const startResult = await this.hcConnection.callAdmin('admin/instance/start', { id: newInstanceId });
+    this.instanceList = await this.hcConnection.callAdmin('admin/instance/list',{}) //if success we could manually add to instancelist without another backend call
+    //await new Promise((resolve) => setTimeout(() => resolve(), 300));
+    //const startResult = await this.hcConnection.callAdmin('admin/instance/start', { id: newInstanceId });
+    //console.log("start_result",startResult)
+  }
+
+  async startNetwork(newInstanceId:string){
+    const runningInstances:cellResult[] = await this.hcConnection.callAdmin('admin/instance/running',{})
+    if (!runningInstances.map(inst=>{return inst.id}).includes(newInstanceId)){
+      const startResult = await this.hcConnection.callAdmin('admin/instance/start', { id: newInstanceId });
+      console.log("start_result",startResult)
+    }
+    this.CurrentInstanceID = newInstanceId
+    const dna_id = this.dna_from_instance(newInstanceId)
+    if(dna_id)
+      this.breadCrumbStack.push(dna_id.split("_")[0])
+    console.log(this.breadCrumbStack.join("->"))
+  }
+
+  async getCells():Promise<string[]>{
+    const list:string[] = []
+    const instances:cellResult[] = await this.hcConnection.callAdmin('admin/instance/list',{})
+    instances.forEach(inst => {list.push(inst.id)})
+    return list
+  }
+
+  is_instanceMember(instanceID:string):boolean{
+    let result = false
+    this.instanceList.forEach(inst => {
+      if(inst.id == instanceID)
+        result = true
+    })
+    return result
+  }
+
+  dna_from_instance(instanceID:string):string {
+    let result = null
+    this.instanceList.forEach(inst => {
+      if(inst.id == instanceID)
+        result = inst.dna
+    })
+    return result
+  }
+
+  getConnectionState(){
+    return this.hcConnection.state
+  }
+
+  async call(zome,fnt, args){
+    return this.hcConnection.call(this.CurrentInstanceID,zome,fnt,args)
   }
 
 

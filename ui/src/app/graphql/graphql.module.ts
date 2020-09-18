@@ -15,11 +15,11 @@ import {resolvers_clone_tracker} from './clone-tracker/resolvers_clone_tracker';
 
 
 export function createApollo(hcs:HolochainService) {
-  console.log("in graph module with connection:",hcs.hcConnection)
-  const callZome = hcs.hcConnection
+  //console.log("in graph module with connection:",hcs.hcConnection)
+  const HService = hcs
   const schemas = [schema_profile,schema_transactor,schema_clone_tracker]
   const resolverlist = [resolvers_profile,resolvers_transactor,resolvers_clone_tracker]
-  const schemaLink = new SchemaLink({ schema: makeExecutableSchema({typeDefs:schemas, resolvers:resolverlist}), context: callZome })
+  const schemaLink = new SchemaLink({ schema: makeExecutableSchema({typeDefs:schemas, resolvers:resolverlist}), context: HService })
   const links =[schemaLink] 
 
   return {

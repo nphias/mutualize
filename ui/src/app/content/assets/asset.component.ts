@@ -16,14 +16,14 @@ import { Observable } from 'rxjs';
 export class AssetComponent implements OnInit {
   balance: Observable<number>;
   errorMessage:string = ""
-  username: string
+  breadCrumbs: string[]
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private holochainservice: HolochainService,
     private mybalance: MyBalanceGQL
-  ) {}
+  ) { }
 
   postForm = this.fb.group({
     content: ["", Validators.required]
@@ -32,7 +32,7 @@ export class AssetComponent implements OnInit {
   ngOnInit() {
     if (!sessionStorage.getItem("userhash"))
       this.router.navigate(["signup"]);
-    this.username = sessionStorage.getItem("username")
+      this.breadCrumbs = this.holochainservice.breadCrumbTrail
     try{
       this.balance = this.mybalance.watch().valueChanges.pipe(map(result=>{
         if (result.errors){

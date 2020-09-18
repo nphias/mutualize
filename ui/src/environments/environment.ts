@@ -4,8 +4,9 @@
 
 export const environment = {
   production: false,
-  INSTANCE_NAME: "mutual-instance",
+  DEFAULT_INSTANCE: "genesis-instance",
   DNA_ID: "mutualize",
+  AGENT_ID: "mutual-agent",
   TEMPLATE_HASH: "Qmf6LZZTNwakq739EfCMJjzrr7cGzD9pWTgm8sNMebMGjA",
   TEMPLATE_FILE: "../dist/dna.dna.json",
   HOST_URL:'ws://localhost:8888'

@@ -29,7 +29,7 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
     if (!sessionStorage.getItem("userhash"))
       this.router.navigate(["signup"]);
-    if(this.holochainservice.hcConnection.state == 2)
+    if(this.holochainservice.getConnectionState() == 2)
       this.errorMessage = "Holochain is disconnected"
     this.user = <Agent>{id:sessionStorage.getItem("userhash"),username:sessionStorage.getItem("username")}
     //this.user.avatarURL = sessionStorage.getItem("avatar")

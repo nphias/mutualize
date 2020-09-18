@@ -1,8 +1,6 @@
-import { environment } from '@environment';
 import {GraphQLError} from 'graphql'
 
 const ZOME_NAME = "cloned-dnas-tracker"
-const INSTANCE_NAME = environment.INSTANCE_NAME
 
 function checkConnection(connection){
   if (connection.state == 2)
@@ -13,8 +11,7 @@ export const resolvers_clone_tracker = {
   Query: {
     async allClones(_, {template_dna}, connection) {
       checkConnection(connection)
-      const allClones = await connection.call(INSTANCE_NAME, ZOME_NAME,'get_cloned_dnas_for_template', {template_dna});
-      console.log(allClones)
+      const allClones = await connection.call(ZOME_NAME,'get_cloned_dnas_for_template', {template_dna});
       return allClones.map((clone) => ({
         parent_dna_hash: clone.template_dna_hash,
         properties: JSON.stringify(clone.properties),//Object.entries(clone.properties).map((property) => ({
@@ -33,7 +30,7 @@ export const resolvers_clone_tracker = {
         properties: JSON.parse(clone.properties),//Object.assign({}, ...clone.properties),
         cloned_dna_hash: clone.cloned_dna_hash
       }
-      return connection.call(INSTANCE_NAME, ZOME_NAME,'register_cloned_dna', { cloned_dna });
+      return connection.call(ZOME_NAME,'register_cloned_dna', { cloned_dna });
     },
   },
 };

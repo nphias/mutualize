@@ -66,7 +66,7 @@ export class SignupComponent implements OnInit {
     sessionStorage.setItem("userhash",this.user.id)
     sessionStorage.setItem("username",this.user.username)
     sessionStorage.setItem("avatar",this.avatarLink)
-    this.router.navigate(["profile"]);
+    this.router.navigate(["home"]);
   }
 
 

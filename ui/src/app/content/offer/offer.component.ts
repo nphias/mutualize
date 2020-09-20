@@ -19,12 +19,12 @@ import { Observable } from 'rxjs';
 export class OfferComponent implements OnInit {
   balance: Observable<number>;
   errorMessage:string = ""
-  //breadCrumbTrail="breadCrumbs"
+  filteredCrumbs:string[]
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private holochainservice: HolochainService,
+    private hcs: HolochainService,
     private mybalance: MyBalanceGQL
   ) {
   }
@@ -36,8 +36,9 @@ export class OfferComponent implements OnInit {
   ngOnInit() {
     if (!sessionStorage.getItem("userhash"))
       this.router.navigate(["signup"]);
-    if(this.holochainservice.getConnectionState() == 2)
+    if(this.hcs.getConnectionState() == 2)
       this.errorMessage = "Holochain is disconnected"
+      this.filteredCrumbs = this.hcs.breadCrumbTrail.map(crumb=>{ return crumb.split("_")[0]})
     try{
       this.balance = this.mybalance.watch().valueChanges.pipe(map(result=>{
         if (result.errors){

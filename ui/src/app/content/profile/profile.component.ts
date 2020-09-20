@@ -15,11 +15,12 @@ import { HolochainService } from 'src/app/core/holochain.service';
 export class ProfileComponent implements OnInit {
   user: Agent //User //Promise<User> | null = null
   errorMessage:string = ""
+  filteredCrumbs:string[]
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private holochainservice: HolochainService
+    private hcs: HolochainService
   ) {}
 
   postForm = this.fb.group({
@@ -29,8 +30,9 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
     if (!sessionStorage.getItem("userhash"))
       this.router.navigate(["signup"]);
-    if(this.holochainservice.getConnectionState() == 2)
+    if(this.hcs.getConnectionState() == 2)
       this.errorMessage = "Holochain is disconnected"
+    this.filteredCrumbs = this.hcs.breadCrumbTrail.map(crumb=>{ return crumb.split("_")[0]})
     this.user = <Agent>{id:sessionStorage.getItem("userhash"),username:sessionStorage.getItem("username")}
     //this.user.avatarURL = sessionStorage.getItem("avatar")
   }

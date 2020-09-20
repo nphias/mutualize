@@ -29,7 +29,7 @@ export class HomeComponent {
     if(this.hcs.getConnectionState() == 2)
         this.errorMessage = "Holochain is disconnected"
     this.filteredCrumbs = this.hcs.breadCrumbTrail.map(crumb=>{ return crumb.split("_")[0]})
-    this.parent_dna_id = this.hcs.dna_id_from_instance_hash(sessionStorage.getItem("parent_dna"))
+    this.parent_dna_id = this.hcs.dna_id_from_instance_hash(sessionStorage.getItem("parent_dna")).split("_")[0]
     try{
       this.me.fetch().toPromise().then(result=>{
         console.log(result)

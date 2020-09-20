@@ -131,10 +131,11 @@ export class HolochainService {
     }
   }
 
-  changeToRunningNetwork(instanceId:string){
+  changeToRunningNetwork(dna_id:string){
+    const instanceId = this.instance_hash_from_dna_id(dna_id)
     sessionStorage.setItem("parent_dna",instanceId)
     this.CurrentInstanceID = instanceId
-    const index =this.breadCrumbStack.indexOf(instanceId)
+    const index = this.breadCrumbStack.indexOf(dna_id) + 1
     this.breadCrumbStack = this.breadCrumbStack.slice(0,index)
   }
 

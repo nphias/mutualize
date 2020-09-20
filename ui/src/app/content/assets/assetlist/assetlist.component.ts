@@ -139,7 +139,7 @@ export class AssetListComponent implements OnInit {
     }
   }
 
-  async join(asset:Asset){
+  async add(asset:Asset){
     console.log(asset)
     const DNA_ID = asset.id //name+"_"+"123"//this.parentDNA
     const CELL_ID = asset.hash //name+"_"+asset.id
@@ -169,7 +169,7 @@ export class AssetListComponent implements OnInit {
      // console.warn("warning, dna not found for intanceID:"+asset.id)
   }
 
-  async leave(asset:Asset){}
+  async remove(asset:Asset){}
 
     
   private async add_to_tracker(props:any,dna_hash:string){

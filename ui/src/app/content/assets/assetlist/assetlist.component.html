@@ -27,9 +27,9 @@
                     <td><label>{{formArr.value[i].keywords}}</label></td>
                     <td><label>{{formArr.value[i].unit_of_account}}</label></td>
                     <td><label>{{formArr.value[i].members}}</label></td>
-                    <td><button *ngIf="!formArr.value[i].is_member" (click)="join(itemrow.value)">Join network</button>
+                    <td><button *ngIf="!formArr.value[i].is_member" (click)="add(itemrow.value)">Add network</button>
                       <button *ngIf="formArr.value[i].is_member" (click)="start(itemrow.value)">Enter network</button>
-                      <button *ngIf="formArr.value[i].is_member" (click)="leave(itemrow.value)">Leave network</button></td>
+                      <button *ngIf="formArr.value[i].is_member" (click)="remove(itemrow.value)">Remove network</button></td>
                   </tr>
               </tbody>
             </table>

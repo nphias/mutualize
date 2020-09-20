@@ -66,15 +66,8 @@ export class AssetComponent implements OnInit {
     //this.user.avatarURL = sessionStorage.getItem("avatar")
   }
 
-  navigateGrandParentDNA(){
-    const grand_parent_dna_hash = this.hcs.instance_hash_from_dna_id(this.hcs.breadCrumbTrail[this.hcs.breadCrumbTrail.length-2])
-      this.hcs.changeToRunningNetwork(grand_parent_dna_hash)
-      //sessionStorage.removeItem("userhash")
-      this.router.navigate(["home"]);
-  }
-
-  navigateNetwork(net:string){
-    this.hcs.changeToRunningNetwork(this.hcs.instance_hash_from_dna_id(net))
+  navigateNetwork(net_id:string){
+    this.hcs.changeToRunningNetwork(net_id)
     this.router.navigate(["home"]);
   }
 

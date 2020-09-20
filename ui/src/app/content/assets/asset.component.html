@@ -1,4 +1,4 @@
-<app-header [breadCrumbTrail]="breadCrumbs"></app-header>
+<app-header [breadCrumbTrail]="filteredCrumbs"></app-header>
 
 <div id="wrapper">
   <!-- Sidebar -->
@@ -16,7 +16,7 @@
     <li class="nav-item">
       <div class="nav-link">
         <i class="fas fa-fw fa-table"></i>
-        <span class="nav-link">Balance: {{balance | async}}</span></div>
+        <span>Balance: {{balance | async}}</span></div>
     </li>
     <li class="nav-item">
       <a class="nav-link" routerLink="/profile"
@@ -35,10 +35,12 @@
 
   <div id="content-wrapper">
     <div class="container-fluid">
-      <!-- Breadcrumbs-->
+      <!--Breadcrumbs -->
       <ol class="breadcrumb">
-        <li class="breadcrumb-item active">Asset List</li>
+        <li class="breadcrumb-item">Asset List:</li> 
+        <li class="breadcrumb-item active" *ngFor="let crumb of breadCrumbs" (click)="navigateNetwork(crumb)"><a>{{crumb | splitfirst:'_'}}</a></li>
       </ol>
+      
 
       <!-- Posts-->
       <app-assetlist></app-assetlist>

@@ -16,17 +16,20 @@ export class HomeComponent {
   balance: Observable<number>;
   errorMessage:string
   breadCrumbs: string[]
+  filteredCrumbs:string[]
+  parent_dna_id: string
 
-  constructor(private mybalance:MyBalanceGQL, private me:MyProfileGQL, private router: Router, private holochainservice: HolochainService) { 
+  constructor(private mybalance:MyBalanceGQL, private me:MyProfileGQL, private router: Router, private hcs: HolochainService) { 
     
   }
 
   ngOnInit() {
     if (!sessionStorage.getItem("userhash"))
         this.router.navigate(["signup"]);
-    if(this.holochainservice.getConnectionState() == 2)
+    if(this.hcs.getConnectionState() == 2)
         this.errorMessage = "Holochain is disconnected"
-    this.breadCrumbs = this.holochainservice.breadCrumbTrail
+    this.filteredCrumbs = this.hcs.breadCrumbTrail.map(crumb=>{ return crumb.split("_")[0]})
+    this.parent_dna_id = this.hcs.dna_id_from_instance_hash(sessionStorage.getItem("parent_dna"))
     try{
       this.me.fetch().toPromise().then(result=>{
         console.log(result)

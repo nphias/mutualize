@@ -18,7 +18,7 @@ id = 'mutualize'
 [[instances]]
 agent = 'mutual-agent'
 dna = 'mutualize'
-id = 'genesis-instance'
+id = 'Qmf6LZZTNwakq739EfCMJjzrr7cGzD9pWTgm8sNMebMGjA'
 
 [instances.storage]
 type = 'memory'
@@ -28,7 +28,7 @@ admin = true
 id = 'websocket-interface'
 
 [[interfaces.instances]]
-id = 'genesis-instance'
+id = 'Qmf6LZZTNwakq739EfCMJjzrr7cGzD9pWTgm8sNMebMGjA'
 
 [interfaces.driver]
 port = 8888

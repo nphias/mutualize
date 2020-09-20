@@ -4,6 +4,7 @@ import { ContentRoutingModule } from './content-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { SplitFirst } from './common/pipes/splitfirst'
 
 import { HomeComponent } from './home/home.component';
 import {TransactionListComponent} from './home/transactionlist/transactionlist.component';
@@ -29,7 +30,8 @@ import { AssetListComponent } from "./assets/assetlist/assetlist.component";
     UserListComponent,
     HeaderComponent,
     AssetComponent,
-    AssetListComponent
+    AssetListComponent,
+    SplitFirst
   ],
   imports: [
     CommonModule,

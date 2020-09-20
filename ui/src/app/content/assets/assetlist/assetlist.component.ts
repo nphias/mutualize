@@ -34,7 +34,8 @@ export class AssetListComponent implements OnInit {
   newAssetForm: FormGroup;
   submitted = false;
   cloneSubscription: Subscription
-  parentDNA: string = environment.TEMPLATE_HASH
+  parent_instance: string = sessionStorage.getItem("parent_instance")
+  parentDNA: string = sessionStorage.getItem("parent_dna")
   instanceList: string[]
 
   constructor(
@@ -47,8 +48,10 @@ export class AssetListComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log("how often am i called")
     if (!sessionStorage.getItem("userhash"))
         this.router.navigate(["signup"]);
+    //this.clones.fetch()
     this.assetForm = this.fb.group({
       Rows : this.fb.array([])
     });
@@ -113,8 +116,6 @@ export class AssetListComponent implements OnInit {
   }
 
 
-
-
   async createAsset(){
     this.submitted = true;
     if (this.newAssetForm.invalid)
@@ -149,6 +150,7 @@ export class AssetListComponent implements OnInit {
         CELL_ID,
         (interfaces) => {return interfaces[0]}
       )
+      this.formArr.clear()
       this.formArr.reset()
       this.populateForm(this.allClones)
     } catch(exception){
@@ -161,8 +163,8 @@ export class AssetListComponent implements OnInit {
     //if(dna_id){
       this.hcs.startNetwork(asset.hash)
       this.formArr.clear()
-      sessionStorage.removeItem("userhash")
-      this.router.navigate(["signup"]);
+      //sessionStorage.removeItem("userhash")
+      this.router.navigate(["home"]);
     //}else
      // console.warn("warning, dna not found for intanceID:"+asset.id)
   }

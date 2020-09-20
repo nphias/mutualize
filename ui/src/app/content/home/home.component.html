@@ -1,4 +1,4 @@
-<app-header [breadCrumbTrail]="breadCrumbs"></app-header>
+<app-header [breadCrumbTrail]="filteredCrumbs"></app-header>
 
 <div id="wrapper">
   <!-- Sidebar -->
@@ -38,6 +38,10 @@
 
   <div id="content-wrapper">
     <div class="container-fluid">
+      <div class="jumbotron">
+        <h1 class="display-4">Welcome to the <b>{{parent_dna_id}}</b> Network</h1>
+        <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+      </div>
       <!-- Breadcrumbs-->
       <ol class="breadcrumb">
         <li class="breadcrumb-item active">Transaction history</li>

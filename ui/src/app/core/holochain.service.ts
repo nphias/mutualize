@@ -11,9 +11,9 @@ export interface cloneResult {
 "dna_hash": string 
 }
 
-export interface cellResult {
-  "id": string, 
-  "dna": string
+export interface instanceResult {
+  "id": string, //dna_hash
+  "dna": string //dna_id
   "agent":string 
   }
 
@@ -22,9 +22,9 @@ export interface cellResult {
 })
 export class HolochainService {
   private hcConnection: HolochainConnection
-  private instanceList: cellResult[]
+  private instanceList: instanceResult[]
   private breadCrumbStack: string[] = []
-  private CurrentInstanceID: string = environment.DEFAULT_INSTANCE
+  private CurrentInstanceID: string = environment.TEMPLATE_HASH
 
   async init(){
     const hash:string = environment.TEMPLATE_HASH
@@ -35,14 +35,15 @@ export class HolochainService {
     }
     console.log(templateDict)
     this.hcConnection = new HolochainConnection(connectOpts)//{ host: environment.HOST_URL })
-      try{
+    sessionStorage.setItem("parent_dna",environment.TEMPLATE_HASH)   
+    try{
           await this.hcConnection.ready()//.then((result)=>{
         //  this.hcConnection.onSignal('offer-received', ({ transaction_address }) => {
          //   console.log("signal callback:",transaction_address)
          // })
             //this.hcConnection.onSignal()
           this.instanceList = await this.hcConnection.callAdmin('admin/instance/list',{}) // await this.getCells()
-          this.breadCrumbStack.push(environment.DNA_ID)
+          this.breadCrumbStack.push(environment.TEMPLATE_DNA_ID)
           //sessionStorage.setItem("network","genesis")
             //get list of interfaces here to know which networks user has joined
             //kill all instances apart from genesis
@@ -117,23 +118,24 @@ export class HolochainService {
   }
 
   async startNetwork(newInstanceId:string){
-    const runningInstances:cellResult[] = await this.hcConnection.callAdmin('admin/instance/running',{})
+    sessionStorage.setItem("parent_dna",newInstanceId)
+    this.CurrentInstanceID = newInstanceId
+    const dna_id = this.dna_id_from_instance_hash(newInstanceId)
+    if(dna_id)
+      this.breadCrumbStack.push(dna_id)
+    console.log(this.breadCrumbStack.join("->"))
+    const runningInstances:instanceResult[] = await this.hcConnection.callAdmin('admin/instance/running',{})
     if (!runningInstances.map(inst=>{return inst.id}).includes(newInstanceId)){
       const startResult = await this.hcConnection.callAdmin('admin/instance/start', { id: newInstanceId });
       console.log("start_result",startResult)
     }
-    this.CurrentInstanceID = newInstanceId
-    const dna_id = this.dna_from_instance(newInstanceId)
-    if(dna_id)
-      this.breadCrumbStack.push(dna_id.split("_")[0])
-    console.log(this.breadCrumbStack.join("->"))
   }
 
-  async getCells():Promise<string[]>{
-    const list:string[] = []
-    const instances:cellResult[] = await this.hcConnection.callAdmin('admin/instance/list',{})
-    instances.forEach(inst => {list.push(inst.id)})
-    return list
+  changeToRunningNetwork(instanceId:string){
+    sessionStorage.setItem("parent_dna",instanceId)
+    this.CurrentInstanceID = instanceId
+    const index =this.breadCrumbStack.indexOf(instanceId)
+    this.breadCrumbStack = this.breadCrumbStack.slice(0,index)
   }
 
   is_instanceMember(instanceID:string):boolean{
@@ -145,11 +147,20 @@ export class HolochainService {
     return result
   }
 
-  dna_from_instance(instanceID:string):string {
+  dna_id_from_instance_hash(instanceHash:string):string {
     let result = null
     this.instanceList.forEach(inst => {
-      if(inst.id == instanceID)
+      if(inst.id == instanceHash)
         result = inst.dna
+    })
+    return result
+  }
+
+  instance_hash_from_dna_id(dna_id:string):string {
+    let result = null
+    this.instanceList.forEach(inst => {
+      if(inst.dna == dna_id)
+        result = inst.id
     })
     return result
   }

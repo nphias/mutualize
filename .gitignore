@@ -1,7 +1,6 @@
 dna/test/node_modules/
 dna/target/
 dna/.cargo/
-dna/dist
 dna/zomes/transactor/code/target
 dna/zomes/profiles/code/target
 dna/zomes/cloned-dnas-tracker/code/target

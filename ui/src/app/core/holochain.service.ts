@@ -6,36 +6,41 @@ export type Dictionary<T> = {
   [key: string]: T;
 }
 
-export interface cloneResult {
+export interface CloneResult {
 "success": boolean, 
 "dna_hash": string 
 }
 
-export interface instanceResult {
+export interface InstanceResult {
   "id": string, //dna_hash
   "dna": string //dna_id
   "agent":string 
-  }
+}
+
+export interface DnaClone {
+  "id": string, //dna_hash
+  "hash": string //dna_id
+}
 
 @Injectable({
   providedIn: "root"
 })
 export class HolochainService {
   private hcConnection: HolochainConnection
-  private instanceList: instanceResult[]
+  private instanceList: InstanceResult[]
   private breadCrumbStack: string[] = []
   private CurrentInstanceID: string = environment.TEMPLATE_HASH
 
   async init(){
     const hash:string = environment.TEMPLATE_HASH
+    sessionStorage.setItem("parent_dna",environment.TEMPLATE_HASH)
     const templateDict:Dictionary<string> = {[environment.TEMPLATE_HASH]:'../dist/dna.dna.json'}
     const connectOpts:HolochainConnectionOptions = {
       host: environment.HOST_URL, 
       devEnv: { templateDnasPaths: templateDict}
     }
     console.log(templateDict)
-    this.hcConnection = new HolochainConnection(connectOpts)//{ host: environment.HOST_URL })
-    sessionStorage.setItem("parent_dna",environment.TEMPLATE_HASH)   
+    this.hcConnection = new HolochainConnection(connectOpts)//{ host: environment.HOST_URL })   
     try{
           await this.hcConnection.ready()//.then((result)=>{
         //  this.hcConnection.onSignal('offer-received', ({ transaction_address }) => {
@@ -44,9 +49,6 @@ export class HolochainService {
             //this.hcConnection.onSignal()
           this.instanceList = await this.hcConnection.callAdmin('admin/instance/list',{}) // await this.getCells()
           this.breadCrumbStack.push(environment.TEMPLATE_DNA_ID)
-          //sessionStorage.setItem("network","genesis")
-            //get list of interfaces here to know which networks user has joined
-            //kill all instances apart from genesis
       }catch(error){
           console.log("Holochain connection failed:"+error)
       }
@@ -76,7 +78,7 @@ export class HolochainService {
   async cloneDna (
     newDnaId: string,
     properties: any,
-  ): Promise<cloneResult> {
+  ): Promise<CloneResult> {
 
     const dnaResult = await this.hcConnection.callAdmin('admin/dna/install_from_file', {
       id: newDnaId,
@@ -124,11 +126,21 @@ export class HolochainService {
     if(dna_id)
       this.breadCrumbStack.push(dna_id)
     console.log(this.breadCrumbStack.join("->"))
-    const runningInstances:instanceResult[] = await this.hcConnection.callAdmin('admin/instance/running',{})
+    const runningInstances:InstanceResult[] = await this.hcConnection.callAdmin('admin/instance/running',{})
     if (!runningInstances.map(inst=>{return inst.id}).includes(newInstanceId)){
       const startResult = await this.hcConnection.callAdmin('admin/instance/start', { id: newInstanceId });
       console.log("start_result",startResult)
     }
+  }
+
+  async cloneExists(dna_id):Promise<boolean>{
+    let result = false
+    const res:DnaClone[] = await this.hcConnection.callAdmin('admin/dna/list', {});
+    res.forEach(clone=>{
+      if(dna_id == clone.id)
+        result = true
+    })
+    return result
   }
 
   changeToRunningNetwork(dna_id:string){

@@ -3,7 +3,7 @@ import { Observable, Subscription } from 'rxjs';
 import { Router } from "@angular/router";
 import { map } from 'rxjs/operators';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { HolochainService, cloneResult } from 'src/app/core/holochain.service'
+import { HolochainService, CloneResult } from 'src/app/core/holochain.service'
 import { CloneIn, RegisterCloneGQL } from 'src/app/graphql/clone-tracker/queries/register-clone-gql';
 import { environment } from '@environment';
 import { Clone,AllClonesGQL } from 'src/app/graphql/clone-tracker/queries/all-clones-gql';
@@ -18,6 +18,15 @@ interface Asset
   unit_of_account:string
   members:number
   is_member:boolean
+} 
+
+interface CloneProperties
+{
+  name:string
+  description:string
+  keywords:string
+  unit_of_account:string
+  parent_dna:string
 } 
 
 @Component({
@@ -48,10 +57,8 @@ export class AssetListComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log("how often am i called")
     if (!sessionStorage.getItem("userhash"))
         this.router.navigate(["signup"]);
-    //this.clones.fetch()
     this.assetForm = this.fb.group({
       Rows : this.fb.array([])
     });
@@ -121,11 +128,11 @@ export class AssetListComponent implements OnInit {
     if (this.newAssetForm.invalid)
       return;
     this.showModal = false;
-    const props = this.newAssetForm.getRawValue()
+    const props:CloneProperties = this.newAssetForm.getRawValue()
     props["parent_dna"] = this.parentDNA
     try{
       const dna_id = props.name+"_"+Date.now()
-      const result:cloneResult = await this.hcs.cloneDna( 
+      const result:CloneResult = await this.cloneAsset( 
         dna_id, //props.name +"_" + "123",//props.parent_dna,
         props
       );
@@ -139,11 +146,29 @@ export class AssetListComponent implements OnInit {
     }
   }
 
+  async cloneAsset(dna_id:string,props:CloneProperties):Promise<CloneResult>{
+    return this.hcs.cloneDna( 
+      dna_id, //props.name +"_" + "123",//props.parent_dna,
+      props
+    );
+  }
+
   async add(asset:Asset){
-    console.log(asset)
-    const DNA_ID = asset.id //name+"_"+"123"//this.parentDNA
-    const CELL_ID = asset.hash //name+"_"+asset.id
+    const props:CloneProperties = {
+      name:asset.name,
+      description:asset.description,
+      keywords:asset.keywords,
+      unit_of_account:asset.unit_of_account,
+      parent_dna:this.parentDNA
+    }
     try{
+      const alreadycloned = await this.hcs.cloneExists(asset.id)
+      if(!alreadycloned){
+        const result:CloneResult = await this.cloneAsset(asset.id,props)
+        console.log(result)
+      }
+      const DNA_ID = asset.id //name+"_"+"123"//this.parentDNA
+      const CELL_ID = asset.hash //name+"_"+asset.id
       await this.hcs.registerNetwork(
         environment.AGENT_ID, 
         DNA_ID, 
@@ -154,6 +179,7 @@ export class AssetListComponent implements OnInit {
       this.formArr.reset()
       this.populateForm(this.allClones)
     } catch(exception){
+      console.log(exception.message)
       this.errorMessage = exception.message
     }
   }

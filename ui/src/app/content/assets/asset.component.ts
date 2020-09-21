@@ -40,7 +40,7 @@ export class AssetComponent implements OnInit {
     this.filteredCrumbs = this.hcs.breadCrumbTrail.map(crumb=>{ return crumb.split("_")[0]})
     const inst = sessionStorage.getItem("parent_dna")
     if (!this.hcs.dna_id_from_instance_hash(inst))
-      console.warn("no dna found for instance:"+inst)
+      throw("no dna found for instance:"+inst)
     else{
       this.parent_dna_id = this.hcs.dna_id_from_instance_hash(inst).split("_")[0]
       if(this.parent_dna_id != environment.TEMPLATE_DNA_ID)
@@ -60,7 +60,8 @@ export class AssetComponent implements OnInit {
           return result.data.balance
         }))
     } catch(exception){
-      this.errorMessage = exception
+      console.error(exception.message)
+      this.errorMessage = exception.message
     }
     //this.user = new User(sessionStorage.getItem("userhash"),sessionStorage.getItem("username"))
     //this.user.avatarURL = sessionStorage.getItem("avatar")

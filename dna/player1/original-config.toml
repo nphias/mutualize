@@ -42,7 +42,7 @@ type = 'debug'
 rules = []
 
 [network]
-sim2h_url = 'ws://192.168.0.19:9000'
+sim2h_url = 'ws://192.168.1.94:9000'
 type = 'sim2h'
 
 [passphrase_service]

@@ -58,7 +58,7 @@ export class HomeComponent {
 
   logout(){
     console.log("logging out")
-    sessionStorage.clear()
+    //sessionStorage.clear()
     this.router.navigate(["signup"]);
   }
 

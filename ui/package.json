@@ -33,6 +33,7 @@
     "callback-to-async-iterator": "^1.1.1",
     "core-js": "^3.6.5",
     "graphql": "14.6.0",
+    "graphql-subscriptions": "^1.1.0",
     "graphql-tag": "^2.10.3",
     "graphql-tools": "5.0.0",
     "rxjs": "~6.5.4",

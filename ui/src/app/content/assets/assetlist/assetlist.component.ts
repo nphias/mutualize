@@ -7,6 +7,7 @@ import { HolochainService, CloneResult } from 'src/app/core/holochain.service'
 import { CloneIn, RegisterCloneGQL } from 'src/app/graphql/clone-tracker/queries/register-clone-gql';
 import { environment } from '@environment';
 import { Clone,AllClonesGQL } from 'src/app/graphql/clone-tracker/queries/all-clones-gql';
+import { SetUsernameGQL } from 'src/app/graphql/profile/queries/set-username-gql';
 
 interface Asset
 {
@@ -50,6 +51,7 @@ export class AssetListComponent implements OnInit {
   constructor(
     private add_clone: RegisterCloneGQL,
     private clones: AllClonesGQL,
+    private setUser: SetUsernameGQL,
     private fb: FormBuilder,
     private hcs: HolochainService,
     private router: Router
@@ -185,14 +187,16 @@ export class AssetListComponent implements OnInit {
   }
 
   start(asset:Asset){
-    //const dna_id = this.hcs.dna_from_instance(asset.id)
-    //if(dna_id){
-      this.hcs.startNetwork(asset.hash)
-      this.formArr.clear()
+    this.hcs.startNetwork(asset.hash)
+    try{
+      this.setUser.mutate({username:sessionStorage.getItem("username")})
+    }catch(error){
+      console.warn(error)
+      this.errorMessage = error + " Note: an error here might mean you are trying to register with a pre-existing / existing username "
+    }  
+    this.formArr.clear()
       //sessionStorage.removeItem("userhash")
-      this.router.navigate(["home"]);
-    //}else
-     // console.warn("warning, dna not found for intanceID:"+asset.id)
+    this.router.navigate(["home"]);
   }
 
   async remove(asset:Asset){}

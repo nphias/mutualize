@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HolochainConnectionOptions, HolochainConnection } from '@uprtcl/holochain-provider';
 import { environment } from '@environment';
+import { PubSub } from 'graphql-subscriptions'
 
 export type Dictionary<T> = {
   [key: string]: T;
@@ -30,6 +31,7 @@ export class HolochainService {
   private instanceList: InstanceResult[]
   private breadCrumbStack: string[] = []
   private CurrentInstanceID: string = environment.TEMPLATE_HASH
+  private pubsub: PubSub = new PubSub()
 
   async init(){
     const hash:string = environment.TEMPLATE_HASH
@@ -43,9 +45,15 @@ export class HolochainService {
     this.hcConnection = new HolochainConnection(connectOpts)//{ host: environment.HOST_URL })   
     try{
           await this.hcConnection.ready()//.then((result)=>{
-        //  this.hcConnection.onSignal('offer-received', ({ transaction_address }) => {
-         //   console.log("signal callback:",transaction_address)
-         // })
+          this.hcConnection.onSignal('offer-received', ({ transaction_address }) => {
+            this.pubsub.publish("offer-received",transaction_address)
+          })
+          this.hcConnection.onSignal('offer-cancelled', ({ transaction_address }) => {
+            this.pubsub.publish("offer-cancelled",transaction_address)
+          })
+          this.hcConnection.onSignal('offer-completed', ({ transaction_address }) => {
+            this.pubsub.publish("offer-completed",transaction_address)
+          })
             //this.hcConnection.onSignal()
           this.instanceList = await this.hcConnection.callAdmin('admin/instance/list',{}) // await this.getCells()
           this.breadCrumbStack.push(environment.TEMPLATE_DNA_ID)
@@ -55,6 +63,7 @@ export class HolochainService {
   }
 
   get breadCrumbTrail(){ return this.breadCrumbStack }
+  get PubSub(){return this.pubsub}
 
 
  /* async cloneDNA(agentid:string, instanceId:string, properties:object ):Promise<string>{

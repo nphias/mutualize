@@ -7,6 +7,7 @@ import { ValidateOfferGQL } from 'src/app/graphql/transactor/queries/validate-of
 import { AcceptOfferGQL,ConsentOfferGQL,CancelOfferGQL } from 'src/app/graphql/transactor/queries/offer-mutations-gql';
 import { ReceivedOffersGQL } from 'src/app/graphql/transactor/queries/offer-subscriptions-gql';
 import { SubscriptionResult } from 'apollo-angular';
+import { HolochainService } from 'src/app/core/holochain.service';
 
 
 @Component({
@@ -28,6 +29,7 @@ export class OfferListComponent {
               private consent:ConsentOfferGQL, 
               private cancel:CancelOfferGQL, 
               private onNewOffer:ReceivedOffersGQL,
+              private hcs: HolochainService,
               private router: Router) {
   }
 
@@ -37,7 +39,7 @@ export class OfferListComponent {
       console.log("offer subscription result",result)
     })
     try {
-      this.pendingOffers = this.offers.fetch().pipe(map(result=>{ //.watch().valueChanges.
+      this.pendingOffers = this.offers.watch().valueChanges.pipe(map(result=>{ //.watch().valueChanges.
         if (!result.errors)
           return result.data.offers.map(offer => <Offer>{id:offer.id, transaction:offer.transaction, state:offer.state})
         this.errorMessage = result.errors[0].message
@@ -46,7 +48,18 @@ export class OfferListComponent {
     } catch(exception){
         this.errorMessage = exception
     }
-    //this.offers.watch().subscribeToMore()
+    this.hcs.PubSub.subscribe("offer-received",(address)=>{
+      console.log("offer recieved signal with address:",address)
+      this.offers.watch().refetch()
+    })
+    this.hcs.PubSub.subscribe("offer-cancelled",(address)=>{
+      console.log("offer cancelled signal with address:",address)
+      this.offers.watch().refetch()
+    })
+    this.hcs.PubSub.subscribe("offer-completed",(address)=>{
+      console.log("offer completed signal with address:",address)
+      this.offers.watch().refetch()
+    })
   }
 
   ngOnDestroy(){
@@ -105,19 +118,18 @@ export class OfferListComponent {
 
   markAccepted(transactID:string, header_address:string){
     try {
-      this.accept.mutate({transactionId:transactID,approvedHeaderId:header_address}).toPromise().then(result=>{
-        console.log(result)
-      }).catch(ex=>{this.errorMessage = ex})
+      this.accept.mutate({transactionId:transactID,approvedHeaderId:header_address},{refetchQueries: [{query: this.offers.document}]})//.toPromise().then(result=>{
+       // console.log(result)
+      //}).catch(ex=>{this.errorMessage = ex})
     } catch(exception){
         this.errorMessage = exception
     }
   }
 
   cancelOffer(transactID:string){
+    console.log(transactID)
     try {
-      this.cancel.mutate({transactionId:transactID}).toPromise().then(result=>{
-        console.log(result)
-      }).catch(ex=>{this.errorMessage = ex})
+      this.cancel.mutate({transactionId:transactID},{refetchQueries: [{query: this.offers.document}]})
     } catch(exception){
         this.errorMessage = exception
     }

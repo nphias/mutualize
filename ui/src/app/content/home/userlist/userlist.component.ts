@@ -5,6 +5,7 @@ import { Router } from "@angular/router";
 import { AllAgentsGQL,Agent } from 'src/app/graphql/profile/queries/all-agents-gql';
 import { CreateOfferGQL } from 'src/app/graphql/transactor/queries/offer-mutations-gql';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { MyOffersGQL } from 'src/app/graphql/transactor/queries/myoffers-gql';
 
 interface offerRow
 {
@@ -26,7 +27,7 @@ export class UserListComponent implements OnInit {
 
   constructor(
     private agents: AllAgentsGQL, 
-    private offer: CreateOfferGQL, 
+    private offer: CreateOfferGQL,
     private router: Router,
     private fb: FormBuilder
     ) { 
@@ -74,7 +75,8 @@ export class UserListComponent implements OnInit {
   createOffer(data:offerRow){
     console.log(data)
     try {
-      const result = this.offer.mutate({creditorId:data.id,amount:data.amount}).toPromise().then(result => {
+      this.offer.mutate({creditorId:data.id,amount:data.amount})
+      .toPromise().then(result => {
       console.log(result)
       this.router.navigate(["offers"]);
     })

@@ -1,15 +1,15 @@
 use super::{ChainSnapshot, CounterpartySnapshot};
 use crate::{
-    attestation,
+   // attestation,
     message::{send_message, MessageBody, OfferMessage, OfferResponse},
     offer,
     offer::OfferState,
     transaction,
-    transaction::Transaction,
+    //transaction::Transaction,
 };
-use hdk::holochain_core_types::chain_header::ChainHeader;
+//use hdk::holochain_core_types::chain_header::ChainHeader;
 use hdk::prelude::*;
-use holochain_entry_utils::HolochainEntry;
+//use holochain_entry_utils::HolochainEntry;
 
 /**
  * Get the balance snapshot from the sender of the transaction
@@ -35,21 +35,22 @@ pub fn get_counterparty_snapshot(
         transaction::get_transactions_from_chain_snapshot(chain_snapshot.snapshot.clone());
 
     let (valid, invalid_reason) =
-        match validate_snapshot_is_valid(&counterparty_address, &chain_snapshot) {
-            Ok(()) => {
-                let result =
-                    transaction::are_transactions_valid(&counterparty_address, &transactions);
-                match result {
+    //commented because of conductor issues 
+        //match validate_snapshot_is_valid(&counterparty_address, &chain_snapshot) {
+            //Ok(()) => {
+                //let result =
+                    match transaction::are_transactions_valid(&counterparty_address, &transactions) {
+                //match result {
                     Ok(true) => (true, None),
                     Ok(false) => (
                         false,
                         Some(format!("Agent's balance is beyond the credit limit")),
                     ),
                     Err(err) => (false, Some(format!("{:?}", err))),
-                }
-            }
-            Err(err) => (false, Some(format!("{:?}", err))),
-        };
+                };
+            //}
+            //Err(err) => (false, Some(format!("{:?}", err))),
+       // };
 
     let balance = transaction::compute_balance(&counterparty_address, &transactions);
 
@@ -112,9 +113,9 @@ fn request_chain_snapshot(
     }
 }
 
-/**
+/*
  * Validate that the transaction snapshot received by the sender of the offer is valid with their attestations in the DHT
- */
+ 
 fn validate_snapshot_is_valid(
     agent_address: &Address,
     chain_snapshot: &ChainSnapshot,
@@ -151,9 +152,11 @@ fn validate_snapshot_is_valid(
     }
 }
 
+
 /**
  * Validates that the given list of headers and entries is valid
- */
+*/
+ 
 fn validate_chain_snapshot(chain_snapshot: &Vec<(ChainHeader, Entry)>) -> ZomeApiResult<()> {
     for (i, (chain_header, entry)) in chain_snapshot.iter().enumerate() {
         if &entry.address() != chain_header.entry_address() {
@@ -173,4 +176,5 @@ fn validate_chain_snapshot(chain_snapshot: &Vec<(ChainHeader, Entry)>) -> ZomeAp
     }
 
     Ok(())
-}
+}*/
+

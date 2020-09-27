@@ -12,13 +12,13 @@ test_agent = false
 
 [[dnas]]
 file = '../dist/dna.dna.json'
-hash = 'Qmf6LZZTNwakq739EfCMJjzrr7cGzD9pWTgm8sNMebMGjA'
+hash = 'QmX259nmMYQee17xH1iL4LfaPSSYr3a2W93wetSQZQgn86'
 id = 'mutualize'
 
 [[instances]]
 agent = 'mutual-agent'
 dna = 'mutualize'
-id = 'Qmf6LZZTNwakq739EfCMJjzrr7cGzD9pWTgm8sNMebMGjA'
+id = 'QmX259nmMYQee17xH1iL4LfaPSSYr3a2W93wetSQZQgn86'
 
 [instances.storage]
 type = 'memory'
@@ -28,7 +28,7 @@ admin = true
 id = 'websocket-interface'
 
 [[interfaces.instances]]
-id = 'Qmf6LZZTNwakq739EfCMJjzrr7cGzD9pWTgm8sNMebMGjA'
+id = 'QmX259nmMYQee17xH1iL4LfaPSSYr3a2W93wetSQZQgn86'
 
 [interfaces.driver]
 port = 8888

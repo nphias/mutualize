@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   AGENT_ID: "mutual-agent",
   TEMPLATE_DNA_ID: "mutualize",
-  TEMPLATE_HASH: "Qmf6LZZTNwakq739EfCMJjzrr7cGzD9pWTgm8sNMebMGjA",
+  TEMPLATE_HASH: "QmX259nmMYQee17xH1iL4LfaPSSYr3a2W93wetSQZQgn86",
   TEMPLATE_FILE: "../dist/dna.dna.json",
   HOST_URL:'ws://localhost:8889'
 };

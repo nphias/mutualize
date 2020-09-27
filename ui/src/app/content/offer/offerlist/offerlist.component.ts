@@ -28,16 +28,16 @@ export class OfferListComponent {
               private accept:AcceptOfferGQL, 
               private consent:ConsentOfferGQL, 
               private cancel:CancelOfferGQL, 
-              private onNewOffer:ReceivedOffersGQL,
+              //private onNewOffer:ReceivedOffersGQL,
               private hcs: HolochainService,
               private router: Router) {
   }
 
   ngOnInit() {
-    this.newOffersSubscription = this.onNewOffer.subscribe()
-    this.newOffersSubscription.subscribe(result =>{
-      console.log("offer subscription result",result)
-    })
+    //this.newOffersSubscription = this.onNewOffer.subscribe()
+    //this.newOffersSubscription.subscribe(result =>{
+   //   console.log("offer subscription result",result)
+   // })
     try {
       this.pendingOffers = this.offers.watch().valueChanges.pipe(map(result=>{ //.watch().valueChanges.
         if (!result.errors)

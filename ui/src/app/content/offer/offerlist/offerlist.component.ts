@@ -100,14 +100,11 @@ export class OfferListComponent {
               return null
             }
             console.log(result.data.offer)
-            if(!result.data.offer.counterparty.consented){
+            if(!result.data.offer.counterparty.consented)
               this.errorMessage = "consent has not been given for the transaction"
-              return result.data.offer
-            }
-            if (!result.data.offer.counterparty.snapshot.valid){
+            if (!result.data.offer.counterparty.snapshot.valid)
               this.errorMessage = "Error:"+result.data.offer.counterparty.snapshot.invalidReason
-              return result.data.offer
-             }
+            return result.data.offer
           }))
         } catch(exception){
             this.errorMessage = exception

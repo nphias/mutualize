@@ -27,7 +27,7 @@ export class OfferListComponent {
               private validate:ValidateOfferGQL, 
               private accept:AcceptOfferGQL, 
               private consent:ConsentOfferGQL, 
-              private cancel:CancelOfferGQL, 
+              private cancel_offer:CancelOfferGQL, 
               //private onNewOffer:ReceivedOffersGQL,
               private hcs: HolochainService,
               private router: Router) {
@@ -123,10 +123,11 @@ export class OfferListComponent {
 
   markAccepted(transactID:string, header_address:string){
     try {
-      this.accept.mutate({transactionId:transactID,approvedHeaderId:header_address},{refetchQueries: [{query: this.offers.document}]})//.toPromise().then(result=>{
-       // console.log(result)
-      //}).catch(ex=>{this.errorMessage = ex})
+      this.accept.mutate({transactionId:transactID,approvedHeaderId:header_address}).toPromise().then(result=>{//,{refetchQueries: [{query: this.offers.document}]})//.toPromise().then(result=>{
+        console.log(result)
+      }).catch(ex=>{this.errorMessage = ex})
     } catch(exception){
+        console.log(exception)
         this.errorMessage = exception
     }
   }
@@ -134,8 +135,11 @@ export class OfferListComponent {
   cancelOffer(transactID:string){
     console.log(transactID)
     try {
-      this.cancel.mutate({transactionId:transactID},{refetchQueries: [{query: this.offers.document}]})
-    } catch(exception){
+      this.cancel_offer.mutate({transactionId:transactID}).toPromise().then(result=>{
+        console.log(result)//,{refetchQueries: [{query: this.offers.document}]})
+    }) 
+  }catch(exception){
+        console.log(exception)
         this.errorMessage = exception
     }
   }

@@ -119,10 +119,12 @@ export const resolvers_transactor = {
       });
     },
     async cancelOffer(_, { transactionId }, connection) {
-
-      return connection.call(ZOME_NAME, 'cancel_offer', {
+      console.log("cancel called")
+      const result = await connection.call(ZOME_NAME, 'cancel_offer', {
         transaction_address: transactionId,
       });
+      console.log(result)
+      return transactionId
     },
   },
  Subscription: {

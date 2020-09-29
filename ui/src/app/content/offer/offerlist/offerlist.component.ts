@@ -88,10 +88,11 @@ export class OfferListComponent {
     })
   }
 
- verifyOffer(transactID:string){
+ async verifyOffer(transactID:string){
     try {
-      this.consent.mutate({transactionId:transactID}).toPromise().then(result=>{
+      this.consent.mutate({transactionId:transactID}).toPromise().then( async result=>{
         console.log(result)
+        await new Promise((resolve) => setTimeout(() => resolve(), 300));
         try {
           this.validOffer = this.validate.watch({transactionId:transactID}).valueChanges.pipe(map(result=>{
             if (result.errors){

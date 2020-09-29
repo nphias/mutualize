@@ -99,11 +99,12 @@ export const resolvers_transactor = {
   Mutation: {
     async createOffer(_, { creditorId, amount }, connection) {
       checkConnection(connection)
-      return connection.call(ZOME_NAME, 'create_offer', {
+      const result = await connection.call(ZOME_NAME, 'create_offer', {
         creditor_address: creditorId,
         amount,
         timestamp: Math.floor(Date.now() / 1000),
       });
+      return result
     },
     async acceptOffer(_, { transactionId, approvedHeaderId }, connection) {
 

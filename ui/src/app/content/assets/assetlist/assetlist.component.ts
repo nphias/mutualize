@@ -124,7 +124,6 @@ export class AssetListComponent implements OnInit {
     }
   }
 
-
   async createAsset(){
     this.submitted = true;
     if (this.newAssetForm.invalid)

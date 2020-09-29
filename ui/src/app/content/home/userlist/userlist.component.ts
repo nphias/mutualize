@@ -28,6 +28,7 @@ export class UserListComponent implements OnInit {
   constructor(
     private agents: AllAgentsGQL, 
     private offer: CreateOfferGQL,
+    private offers:MyOffersGQL,
     private router: Router,
     private fb: FormBuilder
     ) { 
@@ -72,16 +73,21 @@ export class UserListComponent implements OnInit {
     }
   }
 
-  createOffer(data:offerRow){
+  async createOffer(data:offerRow){
     console.log(data)
     try {
-      this.offer.mutate({creditorId:data.id,amount:data.amount})
-      .toPromise().then(result => {
-      console.log(result)
+      await this.offer.mutate({creditorId:data.id,amount:data.amount},{refetchQueries: [{query: this.offers.document}]})
+      .toPromise()//.then(result => {
+      //console.log(result)
       this.router.navigate(["offers"]);
-    })
+    //}).catch(ex=>{this.errorMessage = ex})
     } catch(exception){
-        this.errorMessage = exception
+      console.error(exception)
+      if ((exception as string).includes("Timeout"))
+        exception = "No reponse, the user is probably offline:"+exception
+      this.errorMessage = exception
+       // console.log(exception)
+       // this.errorMessage = exception
     }
   }
   

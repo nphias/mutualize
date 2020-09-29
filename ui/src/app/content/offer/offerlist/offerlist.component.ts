@@ -8,6 +8,8 @@ import { AcceptOfferGQL,ConsentOfferGQL,CancelOfferGQL } from 'src/app/graphql/t
 import { ReceivedOffersGQL } from 'src/app/graphql/transactor/queries/offer-subscriptions-gql';
 import { SubscriptionResult } from 'apollo-angular';
 import { HolochainService } from 'src/app/core/holochain.service';
+import { MyBalanceGQL } from 'src/app/graphql/transactor/queries/mybalance-gql';
+import { MyTransactionsGQL } from 'src/app/graphql/transactor/queries/mytransactions-gql';
 
 
 @Component({
@@ -18,7 +20,8 @@ import { HolochainService } from 'src/app/core/holochain.service';
 export class OfferListComponent {
   pendingOffers: Observable<Offer[]>;
   validOffer: Observable<Offer>;
-  offerSubscription: Subscription
+  validOfferSubscription: Subscription
+  //pendingOfferSubscription: Subscription
   newOffersSubscription: Observable<SubscriptionResult<any>>
   errorMessage:string
 
@@ -28,6 +31,8 @@ export class OfferListComponent {
               private accept:AcceptOfferGQL, 
               private consent:ConsentOfferGQL, 
               private cancel_offer:CancelOfferGQL, 
+              private mybalance: MyBalanceGQL,
+              private transactions: MyTransactionsGQL,
               //private onNewOffer:ReceivedOffersGQL,
               private hcs: HolochainService,
               private router: Router) {
@@ -59,33 +64,16 @@ export class OfferListComponent {
     this.hcs.PubSub.subscribe("offer-completed",(address)=>{
       console.log("offer completed signal with address:",address)
       this.offers.watch().refetch()
+      this.mybalance.watch().refetch()
+      this.transactions.watch().refetch()
+
     })
+    
   }
 
   ngOnDestroy(){
-    if (this.offerSubscription)
-    this.offerSubscription.unsubscribe()
-  }
-
-  acceptOffer(transactID:string){
-    try {
-      this.validOffer = this.validate.watch({transactionId:transactID}).valueChanges.pipe(map(result=>{
-        if (!result.errors){
-          console.log(result.data.offer)
-          return result.data.offer
-         } //.map(offer => <Offer>{id:offer.id, transaction:offer.transaction, counterparty:offer.counterparty, state:offer.state})
-        this.errorMessage = result.errors[0].message
-        return null
-      }))
-    } catch(exception){
-        this.errorMessage = exception
-    }
-    this.offerSubscription = this.validOffer.subscribe(offerDetail=>{ 
-      if (offerDetail.counterparty.snapshot)
-        this.markAccepted(offerDetail.id, offerDetail.counterparty.snapshot.lastHeaderId)
-      else
-        console.log("consent failed?")
-    })
+    if (this.validOfferSubscription)
+    this.validOfferSubscription.unsubscribe()
   }
 
  async verifyOffer(transactID:string){
@@ -109,7 +97,7 @@ export class OfferListComponent {
         } catch(exception){
             this.errorMessage = exception
         }
-        this.offerSubscription = this.validOffer.subscribe(offerDetail=>{ 
+        this.validOfferSubscription = this.validOffer.subscribe(offerDetail=>{ 
           if (offerDetail.counterparty.snapshot)
             this.markAccepted(offerDetail.id, offerDetail.counterparty.snapshot.lastHeaderId)
           else
@@ -123,9 +111,7 @@ export class OfferListComponent {
 
   markAccepted(transactID:string, header_address:string){
     try {
-      this.accept.mutate({transactionId:transactID,approvedHeaderId:header_address}).toPromise().then(result=>{//,{refetchQueries: [{query: this.offers.document}]})//.toPromise().then(result=>{
-        console.log(result)
-      }).catch(ex=>{this.errorMessage = ex})
+      this.accept.mutate({transactionId:transactID,approvedHeaderId:header_address},{refetchQueries: [{query: this.offers.document},{query:this.transactions.document}]}).toPromise()
     } catch(exception){
         console.log(exception)
         this.errorMessage = exception
@@ -135,14 +121,16 @@ export class OfferListComponent {
   cancelOffer(transactID:string){
     console.log(transactID)
     try {
-      this.cancel_offer.mutate({transactionId:transactID}).toPromise().then(result=>{
-        console.log(result)//,{refetchQueries: [{query: this.offers.document}]})
-    }) 
-  }catch(exception){
-        console.log(exception)
+      this.cancel_offer.mutate({transactionId:transactID},{refetchQueries: [{query: this.offers.document}]}).toPromise()
+    }catch(exception){
+        console.error(exception)
+       // if (Object.JSON.parse(exception).includes("Timeout"))
+         exception = "No reponse, the user is probably offline:"+exception
         this.errorMessage = exception
     }
   }
+
+
 
 
 }

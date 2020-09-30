@@ -185,10 +185,10 @@ export class AssetListComponent implements OnInit {
     }
   }
 
-  start(asset:Asset){
-    this.hcs.startNetwork(asset.hash)
+  async start(asset:Asset){
     try{
-      this.setUser.mutate({username:sessionStorage.getItem("username")})
+      await this.hcs.startNetwork(asset.hash)
+      await this.setUser.mutate({username:sessionStorage.getItem("username")}).toPromise()
     }catch(error){
       console.warn(error)
       this.errorMessage = error + " Note: an error here might mean you are trying to register with a pre-existing / existing username "

@@ -128,18 +128,20 @@ export class HolochainService {
     //console.log("start_result",startResult)
   }
 
+  //
   async startNetwork(newInstanceId:string){
-    sessionStorage.setItem("parent_dna",newInstanceId)
-    this.CurrentInstanceID = newInstanceId
-    const dna_id = this.dna_id_from_instance_hash(newInstanceId)
-    if(dna_id)
-      this.breadCrumbStack.push(dna_id)
-    console.log(this.breadCrumbStack.join("->"))
     const runningInstances:InstanceResult[] = await this.hcConnection.callAdmin('admin/instance/running',{})
     if (!runningInstances.map(inst=>{return inst.id}).includes(newInstanceId)){
       const startResult = await this.hcConnection.callAdmin('admin/instance/start', { id: newInstanceId });
       console.log("start_result",startResult)
     }
+    sessionStorage.setItem("parent_dna",newInstanceId)
+    this.CurrentInstanceID = newInstanceId
+    const dna_id = this.dna_id_from_instance_hash(newInstanceId)
+    if(!dna_id)
+      throw ("DNA_ID does not exist for instance:"+newInstanceId)
+    this.breadCrumbStack.push(dna_id)
+    console.log(this.breadCrumbStack.join("->"))
   }
 
   async cloneExists(dna_id):Promise<boolean>{

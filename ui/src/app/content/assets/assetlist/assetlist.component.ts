@@ -8,6 +8,7 @@ import { CloneIn, RegisterCloneGQL } from 'src/app/graphql/clone-tracker/queries
 import { environment } from '@environment';
 import { Clone,AllClonesGQL } from 'src/app/graphql/clone-tracker/queries/all-clones-gql';
 import { SetUsernameGQL } from 'src/app/graphql/profile/queries/set-username-gql';
+import { MyTransactionsGQL } from 'src/app/graphql/transactor/queries/mytransactions-gql';
 
 interface Asset
 {
@@ -52,6 +53,7 @@ export class AssetListComponent implements OnInit {
     private add_clone: RegisterCloneGQL,
     private clones: AllClonesGQL,
     private setUser: SetUsernameGQL,
+    private transactions: MyTransactionsGQL,
     private fb: FormBuilder,
     private hcs: HolochainService,
     private router: Router
@@ -188,10 +190,10 @@ export class AssetListComponent implements OnInit {
   async start(asset:Asset){
     try{
       await this.hcs.startNetwork(asset.hash)
-      await this.setUser.mutate({username:sessionStorage.getItem("username")}).toPromise()
+      await this.setUser.mutate({username:sessionStorage.getItem("username")},{refetchQueries: [{query: this.transactions.document}]}).toPromise()
     }catch(error){
-      console.warn(error)
       this.errorMessage = error + " Note: an error here might mean you are trying to register with a pre-existing / existing username "
+      console.warn(error)
     }  
     this.formArr.clear()
       //sessionStorage.removeItem("userhash")

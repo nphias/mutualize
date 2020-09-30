@@ -108,10 +108,12 @@ export const resolvers_transactor = {
     },
     async acceptOffer(_, { transactionId, approvedHeaderId }, connection) {
 
-      return connection.call(ZOME_NAME, 'accept_offer', {
+      const result = await connection.call(ZOME_NAME, 'accept_offer', {
         transaction_address: transactionId,
         approved_header_address: approvedHeaderId,
       });
+      console.log("result:"+result)
+      return result
     },
     async consentForOffer(_, { transactionId }, connection) {
 

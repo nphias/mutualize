@@ -64,7 +64,7 @@ export class OfferListComponent {
     this.hcs.PubSub.subscribe("offer-completed",(address)=>{
       console.log("offer completed signal with address:",address)
       this.offers.watch().refetch()
-      this.mybalance.watch().refetch()
+      this.mybalance.fetch()
       this.transactions.watch().refetch()
 
     })
@@ -97,7 +97,8 @@ export class OfferListComponent {
         } catch(exception){
             this.errorMessage = exception
         }
-        this.validOfferSubscription = this.validOffer.subscribe(offerDetail=>{ 
+        this.validOfferSubscription = this.validOffer.subscribe(async offerDetail=>{ 
+          await new Promise((resolve) => setTimeout(() => resolve(), 300));
           if (offerDetail.counterparty.snapshot)
             this.markAccepted(offerDetail.id, offerDetail.counterparty.snapshot.lastHeaderId)
           else
@@ -109,9 +110,13 @@ export class OfferListComponent {
     }
   }
 
-  markAccepted(transactID:string, header_address:string){
+  async markAccepted(transactID:string, header_address:string){
     try {
-      this.accept.mutate({transactionId:transactID,approvedHeaderId:header_address},{refetchQueries: [{query: this.offers.document},{query:this.transactions.document}]}).toPromise()
+      const result = await this.accept.mutate({transactionId:transactID,approvedHeaderId:header_address}
+        ,{refetchQueries: [{query: this.offers.document},{query:this.transactions.document}]})
+        .toPromise().catch(ex=>{console.log("in promise catch"); this.errorMessage = ex})
+      console.log(result)
+      this.mybalance.fetch()
     } catch(exception){
         console.log(exception)
         this.errorMessage = exception
@@ -121,7 +126,8 @@ export class OfferListComponent {
   cancelOffer(transactID:string){
     console.log(transactID)
     try {
-      this.cancel_offer.mutate({transactionId:transactID},{refetchQueries: [{query: this.offers.document}]}).toPromise()
+      this.cancel_offer.mutate({transactionId:transactID},{refetchQueries: [{query: this.offers.document}]})
+      .toPromise().catch(ex=>{this.errorMessage = ex})
     }catch(exception){
         console.error(exception)
        // if (Object.JSON.parse(exception).includes("Timeout"))

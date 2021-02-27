@@ -15,7 +15,17 @@ let
    url = "https://github.com/${config.holonix.github.owner}/${config.holonix.github.repo}/tarball/${config.holonix.github.ref}";
    sha256 = config.holonix.github.sha256;
   }
- ) { config = config; };
+ ) { 
+   config = config;
+
+   holochainVersionId = "custom";
+   
+   holochainVersion = { 
+    rev = "8c62cb5888f491f08e6fdf13b6f3991f85a9801a";  
+    sha256 = "1kgxyfrwmga27mqywhivn0xdi6br90bavqvnd4kbrfyzbzmf8fcr";  
+    cargoSha256 = "1ix8ihlizjsmx8xaaxknbl0wkyck3kc98spipx5alav8ln4wf46s";
+   };
+ };
  # END HOLONIX IMPORT BOILERPLATE
 
 in

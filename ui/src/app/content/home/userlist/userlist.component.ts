@@ -2,10 +2,12 @@ import { Component, OnInit } from "@angular/core";
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from "@angular/router";
-import { AllAgentsGQL,Agent } from 'src/app/graphql/profile/queries/all-agents-gql';
-import { CreateOfferGQL } from 'src/app/graphql/transactor/queries/offer-mutations-gql';
+import {  AgentProfile } from '../../../services/profiles.service'
+//import { CreateOfferGQL } from 'src/app/graphql/transactor/queries/offer-mutations-gql';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { MyOffersGQL } from 'src/app/graphql/transactor/queries/myoffers-gql';
+import { ProfilesStore } from "src/app/stores/profiles.store";
+import { TransactorStore } from "src/app/stores/transactor.store";
+//import { MyOffersGQL } from 'src/app/graphql/transactor/queries/myoffers-gql';
 
 interface offerRow
 {
@@ -20,52 +22,61 @@ interface offerRow
   styleUrls: ["./userlist.component.css"]
 })
 export class UserListComponent implements OnInit {
-  agentlist: Observable<Agent[]>;
-  errorMessage:string
-  userForm: FormGroup
-  agentSubscription: Subscription
+  agentlist: AgentProfile[] = [];
+  errorMessage!:string
+  userForm!: FormGroup
+ // agentSubscription!: Subscription
 
   constructor(
-    private agents: AllAgentsGQL, 
-    private offer: CreateOfferGQL,
-    private offers:MyOffersGQL,
+  //  private agents: AllAgentsGQL, 
+   // private offer: CreateOfferGQL,
+   // private offers:MyOffersGQL,
+    private t_store: TransactorStore,
+    private p_store: ProfilesStore,
     private router: Router,
     private fb: FormBuilder
     ) { 
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.userForm = this.fb.group({
       Rows : this.fb.array([])
     });
     try {
-      this.agentlist = this.agents.watch().valueChanges.pipe(map(result=>{
+      await this.p_store.fetchAllProfiles()
+      console.log("profiles",this.p_store.profiles)
+      /// this could be done by piping keyvalue in the ngfor template
+      for (let key in this.p_store.profiles){
+        this.agentlist.push({agent_pub_key:key, profile:this.p_store.profiles[key]})
+      }//Object.values(this.p_store.profiles).map(profile =>{return profile..content})
+     
+     /* this.agentlist = this.agents.watch().valueChanges.pipe(map(result=>{
         if (!result.errors)
           return result.data.allAgents.map(agent => <Agent>{id:agent.id, username:agent.username})
         this.errorMessage = result.errors[0].message
         return null
-      }))
+      }))*/
     } catch(exception){
         this.errorMessage = exception
     }
-    this.agentSubscription = this.agentlist.subscribe(agents => { this.populateForm(agents)})
+    //this.agentSubscription = this.agentlist.subscribe(agents => { this.populateForm(agents)})
   }
 
   ngOnDestroy(){
-    this.agentSubscription.unsubscribe()
+   // this.agentSubscription.unsubscribe()
   }
 
   get formArr() {
     return this.userForm.get("Rows") as FormArray;
   }
 
-  populateForm(agentlist: Agent[]){
+  populateForm(agentlist: AgentProfile[]){
     for (let i = 0; i < agentlist.length; i++ ) {
-      if (agentlist[i].id != sessionStorage.getItem("userhash")){
+      if (agentlist[i].agent_pub_key != sessionStorage.getItem("userhash")){
         this.formArr.push(
           this.fb.group({
-            id: this.fb.control(agentlist[i].id),
-            username: this.fb.control(agentlist[i].username),
+            id: this.fb.control(agentlist[i].agent_pub_key),
+            username: this.fb.control(agentlist[i].profile.nickname),
             amount: this.fb.control(0)
           })
         )
@@ -76,8 +87,10 @@ export class UserListComponent implements OnInit {
   async createOffer(data:offerRow){
     console.log(data)
     try {
-      await this.offer.mutate({creditorId:data.id,amount:data.amount},{refetchQueries: [{query: this.offers.document}]})
-      .toPromise()//.then(result => {
+      const result = await this.t_store.createOffer(data.id,data.amount)
+      console.log(result)
+     // await this.offer.mutate({creditorId:data.id,amount:data.amount},{refetchQueries: [{query: this.offers.document}]})
+      //.toPromise()//.then(result => {
       //console.log(result)
       this.router.navigate(["offers"]);
     //}).catch(ex=>{this.errorMessage = ex})

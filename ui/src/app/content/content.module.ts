@@ -1,45 +1,29 @@
 
 import { NgModule } from '@angular/core';
-import { ContentRoutingModule } from './content-routing.module';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { SplitFirst } from './common/pipes/splitfirst'
 
+import {ContentRoutingModule} from './content-routing.module'
+import { LazyComponent } from './lazycontent/lazy.component';
+import { MobxAngularModule } from 'mobx-angular';
+import { TransactionListComponent } from './home/transactionlist/transactionlist.component';
 import { HomeComponent } from './home/home.component';
-import {TransactionListComponent} from './home/transactionlist/transactionlist.component';
-import { SignupComponent } from './signup/signup.component';
-import { ProfileComponent } from "./profile/profile.component";
-import { OfferComponent } from "./offer/offer.component";
-import { OfferListComponent } from "./offer/offerlist/offerlist.component";
-import { UserListComponent } from "./home/userlist/userlist.component";
-import { HeaderComponent } from "./common/header/header.component"
-import { AssetComponent } from "./assets/asset.component";
-import { AssetListComponent } from "./assets/assetlist/assetlist.component";
-
-
+import { UserListComponent } from './home/userlist/userlist.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { OfferComponent } from './offer/offer.component';
  
 @NgModule({
-  declarations: [
-    HomeComponent,
-    TransactionListComponent,
-    SignupComponent,
-    ProfileComponent,
-    OfferComponent,
-    OfferListComponent,
-    UserListComponent,
-    HeaderComponent,
-    AssetComponent,
-    AssetListComponent,
-    SplitFirst
-  ],
   imports: [
     CommonModule,
+    ContentRoutingModule,
+    MobxAngularModule,
     FormsModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-    ContentRoutingModule
+    ReactiveFormsModule
   ],
-  providers: []
+  declarations: [LazyComponent,
+     TransactionListComponent,
+     UserListComponent,
+     HomeComponent,
+     OfferComponent
+     ],
 })
 export class ContentModule {}

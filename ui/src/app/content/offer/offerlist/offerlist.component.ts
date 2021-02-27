@@ -2,14 +2,16 @@ import { Component, OnInit } from "@angular/core";
 import { Observable,Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from "@angular/router";
-import { MyOffersGQL,Offer } from 'src/app/graphql/transactor/queries/myoffers-gql';
-import { ValidateOfferGQL } from 'src/app/graphql/transactor/queries/validate-offer-gql';
-import { AcceptOfferGQL,ConsentOfferGQL,CancelOfferGQL } from 'src/app/graphql/transactor/queries/offer-mutations-gql';
-import { ReceivedOffersGQL } from 'src/app/graphql/transactor/queries/offer-subscriptions-gql';
-import { SubscriptionResult } from 'apollo-angular';
+//import { MyOffersGQL,Offer } from 'src/app/graphql/transactor/queries/myoffers-gql';
+//import { ValidateOfferGQL } from 'src/app/graphql/transactor/queries/validate-offer-gql';
+//import { AcceptOfferGQL,ConsentOfferGQL,CancelOfferGQL } from 'src/app/graphql/transactor/queries/offer-mutations-gql';
+//import { ReceivedOffersGQL } from 'src/app/graphql/transactor/queries/offer-subscriptions-gql';
+//import { SubscriptionResult } from 'apollo-angular';
 import { HolochainService } from 'src/app/core/holochain.service';
-import { MyBalanceGQL } from 'src/app/graphql/transactor/queries/mybalance-gql';
-import { MyTransactionsGQL } from 'src/app/graphql/transactor/queries/mytransactions-gql';
+import { Offer } from "src/app/services/transactor.service";
+import { TransactorStore } from "src/app/stores/transactor.store";
+//import { MyBalanceGQL } from 'src/app/graphql/transactor/queries/mybalance-gql';
+//import { MyTransactionsGQL } from 'src/app/graphql/transactor/queries/mytransactions-gql';
 
 
 @Component({
@@ -18,22 +20,23 @@ import { MyTransactionsGQL } from 'src/app/graphql/transactor/queries/mytransact
   styleUrls: ["./offerlist.component.css"]
 })
 export class OfferListComponent {
-  pendingOffers: Observable<Offer[]>;
-  validOffer: Observable<Offer>;
-  validOfferSubscription: Subscription
+  pendingOffers: Offer[] =[]//Observable<Offer[]>;
+  validOffer: Offer[] = [];
+  //validOfferSubscription: Subscription
   //pendingOfferSubscription: Subscription
-  newOffersSubscription: Observable<SubscriptionResult<any>>
-  errorMessage:string
+  //newOffersSubscription: Observable<SubscriptionResult<any>>
+  errorMessage:string = ""
 
   constructor(
-              private offers:MyOffersGQL, 
-              private validate:ValidateOfferGQL, 
-              private accept:AcceptOfferGQL, 
-              private consent:ConsentOfferGQL, 
-              private cancel_offer:CancelOfferGQL, 
-              private mybalance: MyBalanceGQL,
-              private transactions: MyTransactionsGQL,
+              //private offers:MyOffersGQL, 
+              //private validate:ValidateOfferGQL, 
+              //private accept:AcceptOfferGQL, 
+              //private consent:ConsentOfferGQL, 
+              //private cancel_offer:CancelOfferGQL, 
+              //private mybalance: MyBalanceGQL,
+              //private transactions: MyTransactionsGQL,
               //private onNewOffer:ReceivedOffersGQL,
+              private t_store: TransactorStore
               private hcs: HolochainService,
               private router: Router) {
   }
@@ -44,12 +47,13 @@ export class OfferListComponent {
    //   console.log("offer subscription result",result)
    // })
     try {
-      this.pendingOffers = this.offers.watch().valueChanges.pipe(map(result=>{ //.watch().valueChanges.
+      await this.t_store.fetchMyPendingOffers()
+      /*this.pendingOffers = this.offers.watch().valueChanges.pipe(map(result=>{ //.watch().valueChanges.
         if (!result.errors)
           return result.data.offers.map(offer => <Offer>{id:offer.id, transaction:offer.transaction, state:offer.state})
         this.errorMessage = result.errors[0].message
         return null
-      }))
+      }))*/
     } catch(exception){
         this.errorMessage = exception
     }

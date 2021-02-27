@@ -6,5 +6,14 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'social graph';
+  title = 'mutualize-rsm';
+  menuIsOpen = false;
+  navIsOpen = false;
+
+  menutoggle(){
+    (this.menuIsOpen === false) ? this.menuIsOpen = true : this.menuIsOpen = false
+  }
+  navtoggle(){
+    (this.navIsOpen === false) ? this.navIsOpen = true : this.navIsOpen = false
+  }
 }

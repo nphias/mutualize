@@ -4,11 +4,9 @@
 
 export const environment = {
   production: false,
-  AGENT_ID: "mutual-agent",
-  TEMPLATE_DNA_ID: "mutualize",
-  TEMPLATE_HASH: "QmUStWnxNcsuUgPrs7ASVWsFhAXhZufNnKBibRG2XSsVuo",
-  TEMPLATE_FILE: "../dist/dna.dna.json",
-  HOST_URL:'ws://localhost:8888'
+  mock: false,
+  HOST_URL:'ws://192.168.1.100:8889',
+  APP_ID:'test-app'
 };
 
 /*

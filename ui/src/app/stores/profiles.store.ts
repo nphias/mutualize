@@ -7,16 +7,19 @@ import {
   runInAction,
   computed,
 } from 'mobx';
-import { ProfilesService, Dictionary, Profile, AgentProfile } from '../services/profiles.service';
+import { Dictionary, Profile, AgentProfile } from '../services/profiles.service';
+import { environment } from "@environment";
 
 @Injectable({
   providedIn: "root"
 })
 export class ProfilesStore {
   @observable
-  public profiles: Dictionary<Profile> = {};
+  private profiles: Dictionary<Profile> = {}//= {['DEFAULT_KEY']:{nickname:"Thomas", fields:{['email']:"looop"}}};
+  @observable
+  private my_agent_pub_key!:string //= "DEFAULT_KEY"
 
-  constructor(protected profilesService: ProfilesService) {
+  constructor() {
     makeObservable(this);
   }
 
@@ -24,13 +27,18 @@ export class ProfilesStore {
     return this.profiles[agentPubKey];
   }
 
-  get myAgentPubKey() {
-    return serializeHash(this.profilesService.cell_agentKeyByteArray);
+  get agentPubKey():string {
+    return this.my_agent_pub_key    
+    //   return serializeHash(this.profilesService.cell_agentKeyByteArray);
+  }
+
+  set agentPubKey(agent_pub_key:string){
+    this.my_agent_pub_key = agent_pub_key
   }
 
   @computed
-  get myProfile(): Profile | undefined {
-    return this.profiles[this.myAgentPubKey];
+  get MyProfile(): Profile  { //| undefined
+    return this.profiles[this.agentPubKey];
   }
 
   @computed
@@ -42,9 +50,12 @@ export class ProfilesStore {
   }
 
   @action
-  public async fetchAllProfiles() {
-    const allProfiles = await this.profilesService.getAllProfiles();
-
+  public async storeAllProfiles(allProfiles:Array<AgentProfile>) {
+    //const allProfiles = await this.profilesService.getAllProfiles();
+ // if( environment.mock){
+ //   this.profiles["Friend_KEY"] = {nickname:"Roberto", fields:{['email']:"doopo"}}
+ // }
+ console.log(allProfiles.length)
     runInAction(() => {
       for (const agentProfile of allProfiles) {
         this.profiles[agentProfile.agent_pub_key] = agentProfile.profile;
@@ -53,46 +64,14 @@ export class ProfilesStore {
   }
 
   @action
-  public async fetchAgentProfile(agentPubKey: string) {
-    const profile = await this.profilesService.getAgentProfile(agentPubKey);
+  public async storeAgentProfile(profile:AgentProfile) {
+    //const profile = await this.profilesService.getAgentProfile(agentPubKey);
 
     if (profile) {
       runInAction(() => {
-        this.profiles[agentPubKey] = profile.profile;
+        this.profiles[profile.agent_pub_key] = profile.profile;
       });
     }
   }
 
-  @action
-  public async fetchMyProfile() {
-    const myProfile = await this.profilesService.getMyProfile();
-    console.log(myProfile)
-    if (myProfile) {
-      runInAction(() => {
-        this.profiles[this.myAgentPubKey] = myProfile.profile;
-      });
-    }
-  }
-
-  @action
-  public async searchProfiles(nicknamePrefix: string) {
-    const searchedProfiles = await this.profilesService.searchProfiles(
-      nicknamePrefix
-    );
-
-    runInAction(() => {
-      for (const { agent_pub_key, profile } of searchedProfiles) {
-        this.profiles[agent_pub_key] = profile;
-      }
-    });
-  }
-
-  @action
-  public async createProfile(profile: Profile) {
-    await this.profilesService.createProfile(profile);
-
-    runInAction(() => {
-      this.profiles[this.myAgentPubKey] = profile;
-    });
-  }
 }

@@ -3,6 +3,9 @@ import { Injectable } from "@angular/core";
 import { environment } from '@environment';
 //import { PubSub } from 'graphql-subscriptions'
 import { AppSignalCb, AppWebsocket, CellId  } from '@holochain/conductor-api'
+import { ProfilesStore } from "../stores/profiles.store";
+import { TransactorStore } from "../stores/transactor.store";
+import { serializeHash } from "../utils/utils";
 
 export enum ConnectionState{
   OPEN,
@@ -20,13 +23,15 @@ export class HolochainService {
   protected signal! : AppSignalCb
   //pubsub: PubSub = new PubSub()
 
- // constructor(ws:AppWebsocket){
+ constructor(
+   private tstore: TransactorStore,
+   private pstore: ProfilesStore){}
   //  this.hcConnection = ws
   //}
 
-  get agentKeyByteArray_from_cell():Uint8Array{return this.cellId[1]}
+  //get agentKeyByteArray_from_cell():Uint8Array{return this.cellId[1]}
 
-  get HoloHashByteArray_from_cell():Uint8Array{return this.cellId[0]}
+  //get HoloHashByteArray_from_cell():Uint8Array{return this.cellId[0]}
 
 
   async init(){ //called by the appModule at startup
@@ -34,20 +39,22 @@ export class HolochainService {
         if (!environment.mock){
           try{
             console.log("Connecting to holochain")
-              await AppWebsocket.connect(environment.HOST_URL)
-                /*signal => {
+              await AppWebsocket.connect(environment.HOST_URL,1200,
+                signal => {
                   const payload = signal.data.payload;
                   if (payload.OfferReceived) {
-                    store.storeOffer(payload.OfferReceived);
+                    this.tstore.storeOffer(payload.OfferReceived);
                   } else if (payload.OfferAccepted) {
-                    store.storeTransaction(payload.OfferAccepted);
+                    this.tstore.storeTransaction(payload.OfferAccepted);
                   }
-                })*/
+                })
                 .then(async (connection)=>{
                 this.hcConnection = connection
                 const appInfo = await connection.appInfo({ installed_app_id: environment.APP_ID });
                 this.cellId = appInfo.cell_data[0][0];
-                console.log(appInfo.cell_data)
+                this.pstore.agentPubKey = serializeHash(this.cellId[1])
+                this.tstore.agent_pub_key = serializeHash(this.cellId[1])
+                console.log("Connected to holochain",appInfo.cell_data)
               })
           }catch(error){
               console.error("Holochain connection failed:")
@@ -79,12 +86,6 @@ export class HolochainService {
 
     getConnectionState(){
       return ConnectionState[this.hcConnection.client.socket.readyState]
-      console.log(this.hcConnection.client.socket.readyState)
-      console.log("open:",this.hcConnection.client.socket.OPEN)
-      console.log("closed:",this.hcConnection.client.socket.CLOSED)
-      console.log("closing:",this.hcConnection.client.socket.CLOSING)
-      console.log("connecting:",this.hcConnection.client.socket.CONNECTING)
-      
     }
 
 }

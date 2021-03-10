@@ -12,7 +12,5 @@ name = "profiles"
 derive_more = "0"
 serde = "1"
 
-hc_utils = "0"
-hdk3 = "0"
-
-profiles = {git = "https://github.com/holochain-open-dev/profiles", branch = "main", package = "profiles"}
+hdk3 = {git = "https://github.com/holochain/holochain", branch = "develop", package = "hdk3"}
+hc-utils = {git = "https://github.com/holochain/hc-utils", branch = "develop", package = "hc_utils"}

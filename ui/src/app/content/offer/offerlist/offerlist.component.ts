@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { Observable,Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from "@angular/router";
@@ -7,21 +7,24 @@ import { Router } from "@angular/router";
 //import { AcceptOfferGQL,ConsentOfferGQL,CancelOfferGQL } from 'src/app/graphql/transactor/queries/offer-mutations-gql';
 //import { ReceivedOffersGQL } from 'src/app/graphql/transactor/queries/offer-subscriptions-gql';
 //import { SubscriptionResult } from 'apollo-angular';
-import { HolochainService } from 'src/app/core/holochain.service';
-import { Offer } from "src/app/services/transactor.service";
+//import { HolochainService } from 'src/app/core/holochain.service';
+import { Dictionary, Offer, OfferState, PublicTransactorService } from "src/app/services/transactor.service";
 import { TransactorStore } from "src/app/stores/transactor.store";
 //import { MyBalanceGQL } from 'src/app/graphql/transactor/queries/mybalance-gql';
 //import { MyTransactionsGQL } from 'src/app/graphql/transactor/queries/mytransactions-gql';
 
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: "app-offerlist",
   templateUrl: "./offerlist.component.html",
   styleUrls: ["./offerlist.component.css"]
 })
 export class OfferListComponent {
-  pendingOffers: Offer[] =[]//Observable<Offer[]>;
+  pendingOffers: Dictionary<Offer> ={}//Observable<Offer[]>;
   validOffer: Offer[] = [];
+  states = OfferState
+  //offerState: OfferState
   //validOfferSubscription: Subscription
   //pendingOfferSubscription: Subscription
   //newOffersSubscription: Observable<SubscriptionResult<any>>
@@ -36,8 +39,9 @@ export class OfferListComponent {
               //private mybalance: MyBalanceGQL,
               //private transactions: MyTransactionsGQL,
               //private onNewOffer:ReceivedOffersGQL,
-              private t_store: TransactorStore
-              private hcs: HolochainService,
+              public t_store: TransactorStore,
+              private transactionService: PublicTransactorService,
+            //  private hcs: HolochainService,
               private router: Router) {
   }
 
@@ -47,7 +51,8 @@ export class OfferListComponent {
    //   console.log("offer subscription result",result)
    // })
     try {
-      await this.t_store.fetchMyPendingOffers()
+      this.transactionService.queryMyPendingOffers()
+      //this.pendingOffers = this.t_store.offers
       /*this.pendingOffers = this.offers.watch().valueChanges.pipe(map(result=>{ //.watch().valueChanges.
         if (!result.errors)
           return result.data.offers.map(offer => <Offer>{id:offer.id, transaction:offer.transaction, state:offer.state})
@@ -57,7 +62,7 @@ export class OfferListComponent {
     } catch(exception){
         this.errorMessage = exception
     }
-    this.hcs.PubSub.subscribe("offer-received",(address)=>{
+   /* this.hcs.PubSub.subscribe("offer-received",(address)=>{
       console.log("offer recieved signal with address:",address)
       this.offers.watch().refetch()
     })
@@ -71,18 +76,18 @@ export class OfferListComponent {
       this.mybalance.fetch()
       this.transactions.watch().refetch()
 
-    })
+    })*/
     
   }
 
   ngOnDestroy(){
-    if (this.validOfferSubscription)
-    this.validOfferSubscription.unsubscribe()
+    //if (this.validOfferSubscription)
+   // this.validOfferSubscription.unsubscribe()
   }
 
  async verifyOffer(transactID:string){
     try {
-      this.consent.mutate({transactionId:transactID}).toPromise().then( async result=>{
+      /*this.consent.mutate({transactionId:transactID}).toPromise().then( async result=>{
         console.log(result)
         await new Promise((resolve) => setTimeout(() => resolve(), 300));
         try {
@@ -108,7 +113,7 @@ export class OfferListComponent {
           else
             console.log("consent failed?")
         })
-      }).catch(ex=>{this.errorMessage = ex})
+      }).catch(ex=>{this.errorMessage = ex})*/
     } catch(exception){
         this.errorMessage = exception
     }
@@ -116,11 +121,11 @@ export class OfferListComponent {
 
   async markAccepted(transactID:string, header_address:string){
     try {
-      const result = await this.accept.mutate({transactionId:transactID,approvedHeaderId:header_address}
+     /* const result = await this.accept.mutate({transactionId:transactID,approvedHeaderId:header_address}
         ,{refetchQueries: [{query: this.offers.document},{query:this.transactions.document}]})
         .toPromise().catch(ex=>{console.log("in promise catch"); this.errorMessage = ex})
       console.log(result)
-      this.mybalance.fetch()
+      this.mybalance.fetch()*/
     } catch(exception){
         console.log(exception)
         this.errorMessage = exception
@@ -130,8 +135,9 @@ export class OfferListComponent {
   cancelOffer(transactID:string){
     console.log(transactID)
     try {
-      this.cancel_offer.mutate({transactionId:transactID},{refetchQueries: [{query: this.offers.document}]})
-      .toPromise().catch(ex=>{this.errorMessage = ex})
+      this.transactionService.cancelOffer(transactID)
+      /*this.cancel_offer.mutate({transactionId:transactID},{refetchQueries: [{query: this.offers.document}]})
+      .toPromise().catch(ex=>{this.errorMessage = ex})*/
     }catch(exception){
         console.error(exception)
        // if (Object.JSON.parse(exception).includes("Timeout"))

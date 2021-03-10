@@ -5,10 +5,11 @@ import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 //import { MyProfileGQL } from 'src/app/graphql/profile/queries/myprofile-gql';
 import { HolochainService } from 'src/app/services/holochain.service';
-import { NetworkService } from 'src/app/services/network.service';
+//import { NetworkService } from 'src/app/services/network.service';
 import { ProfilesStore } from 'src/app/stores/profiles.store';
 import { TransactorStore } from 'src/app/stores/transactor.store';
 import { PublicTransactorService } from 'src/app/services/transactor.service';
+import { ProfilesService } from 'src/app/services/profiles.service';
 
 
 @Component({
@@ -29,12 +30,14 @@ export class HomeComponent {
   constructor(
     //mybalance:MyBalanceGQL, 
     //private me:MyProfileGQL, 
-    private ps:ProfilesStore,
-    private ts:TransactorStore,
+    public p_store:ProfilesStore,
+    public t_store:TransactorStore,
     private transactorService: PublicTransactorService,
+    private profilesService: ProfilesService,
     private router: Router, 
     private hcs: HolochainService,
-    private network: NetworkService) { 
+    //private network: NetworkService
+    ) { 
     
   }
 
@@ -44,9 +47,10 @@ export class HomeComponent {
     //const state = this.hcs.getConnectionState()
     //if(state != "OPEN")
       //  this.errorMessage = "Holochain is "+state
-    this.filteredCrumbs = this.network.breadCrumbTrail.map(crumb=>{ return crumb.split("_")[0]})
+  //this.filteredCrumbs = this.network.breadCrumbTrail.map(crumb=>{ return crumb.split("_")[0]})
     //this.parent_dna_id = this.hcs.dna_id_from_instance_hash(sessionStorage.getItem("parent_dna")).split("_")[0]
     try{
+      this.profilesService.createProfile({ nickname: "new_user"+this.randomIntFromInterval(500,10000), fields: {["email"]: "myemail@email.com"}})//]Dictionary<string>;}
   //    console.log("fetching profile")
 //this.ps.fetchMyProfile()//.fetchMyTransactions()
       //this.me.fetch().toPromise()
@@ -80,6 +84,10 @@ export class HomeComponent {
     console.log("logging out")
     //sessionStorage.clear()
     this.router.navigate(["signup"]);
+  }
+
+  randomIntFromInterval(min: number, max:number) { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
 }

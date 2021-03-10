@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from "@angular/router";
-import { Dictionary, Transaction } from '../../../services/transactor.service'
+import { Dictionary, PublicTransactorService, Transaction } from '../../../services/transactor.service'
 import { TransactorStore } from "src/app/stores/transactor.store";
 //import { MyTransactionsGQL,Transaction } from 'src/app/graphql/transactor/queries/mytransactions-gql';
 
@@ -14,16 +14,18 @@ import { TransactorStore } from "src/app/stores/transactor.store";
 export class TransactionListComponent implements OnInit {
   transaction!: Transaction;
   transactionlist: Transaction[] = []//Observable<Transaction[]>;
-  errorMessage!:string
+  errorMessage:string = ""
 
-  constructor( private t_store: TransactorStore, private router: Router) { //private transactions: MyTransactionsGQL
+  constructor( public t_store: TransactorStore, 
+    private transactionService: PublicTransactorService,
+    private router: Router) { //private transactions: MyTransactionsGQL
   }
 
   async ngOnInit() {
    try {
-     await this.t_store.fetchMyTransactions()
-     console.log("trnasactions",this.t_store.myTransactions)
-     this.transactionlist = this.t_store.myTransactions.map(transaction =>{return transaction.content})
+     await this.transactionService.getMyTransactions()
+     //console.log("trnasactions",this.t_store.myTransactions)
+     //this.transactionlist = this.t_store.myTransactions.map(transaction =>{return transaction.content})
       /*this.transactionlist = this.transactions.watch().valueChanges.pipe(map(result=>{
         if (result.errors){
           this.errorMessage = result.errors[0].message
@@ -37,7 +39,8 @@ export class TransactionListComponent implements OnInit {
         }
       }))*/
     } catch(exception){
-        this.errorMessage = exception
+        this.errorMessage = "type:"+exception.data.type+" "+exception.data.data
+        console.log(exception)
     }
   }
 

@@ -8,7 +8,7 @@ import {
   computed,
   makeObservable,
 } from 'mobx';
-import { PublicTransactorService, Dictionary, Offer, Transaction, Multiparty } from '../services/transactor.service';
+import { Dictionary, Offer, Transaction, Multiparty } from '../services/transactor.service';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -16,19 +16,24 @@ import { Injectable } from '@angular/core';
 })
 export class TransactorStore {
   @observable
-  public offers: Dictionary<Offer> = {};
+  private offers: Dictionary<Offer> = {};  //todo make private and use getter
   @observable
-  public transactions: Dictionary<Transaction> = {};
+  private transactions: Dictionary<Transaction> = {};
+  private myAgentPubKey:string = "DEFAULT_KEY"
+
 
   constructor(
-    protected transactorService: PublicTransactorService,
     public profilesStore: ProfilesStore
   ) {
     makeObservable(this);
   }
 
-  get myAgentPubKey() {
-    return serializeHash(this.transactorService.cell_agentKeyByteArray);
+  get agent_pub_key():string {
+   return this.myAgentPubKey    
+  }
+
+  set agent_pub_key(agent_pub_key:string){
+    this.myAgentPubKey = agent_pub_key
   }
 
   @computed
@@ -78,19 +83,19 @@ export class TransactorStore {
   }
 
   @computed
-  get outgoingOffers(): Array<Hashed<Offer>> {
+  get OutgoingOffers(): Array<Hashed<Offer>> {
     return this.myPendingOffers.filter(offer => this.isOutgoing(offer.content));
   }
 
   @computed
-  get incomingOffers(): Array<Hashed<Offer>> {
+  get IncomingOffers(): Array<Hashed<Offer>> {
     return this.myPendingOffers.filter(
       offer => !this.isOutgoing(offer.content)
     );
   }
 
   @computed
-  get myBalance(): number {
+  get MyBalance(): number {
     return Object.values(this.transactions).reduce(
       (acc, next) => acc + (this.isOutgoing(next) ? -next.amount : next.amount),
       0
@@ -98,33 +103,33 @@ export class TransactorStore {
   }
 
   @action
-  public async fetchMyPendingOffers() {
-    const offers = await this.transactorService.queryMyPendingOffers();
+  public async storeMyPendingOffers(myAgentPubKey:string, offers:Array<Hashed<Offer>>) {
+    //const offers = await this.transactorService.queryMyPendingOffers();
 
-    const promises = offers.map(o =>
+   /* const promises = offers.map(o =>
       this.profilesStore.fetchAgentProfile(this.counterpartyKey(o.content))
     );
-    await Promise.all(promises);
+    await Promise.all(promises);*/
 
     offers.forEach(o => this.storeOffer(o));
   }
 
   @action
-  public async fetchMyTransactions() {
+  public async storeMyTransactions(agentPubKey: string, transactions:Array<Hashed<Transaction>>) {
     
-    const transactions = await this.transactorService.getAgentTransactions(
-      this.myAgentPubKey
-    );
-    console.log("hereo")
-    const promises = transactions.map(t =>
-      this.profilesStore.fetchAgentProfile(this.counterpartyKey(t.content))
-    );
-    await Promise.all(promises);
+    //const transactions = await this.transactorService.getAgentTransactions(
+    //  this.myAgentPubKey
+    //);
+   // console.log("hereo")
+    //const promises = transactions.map(t =>
+    //  this.profilesStore.storeAgentProfile(this.counterpartyKey(agentPubKey,{spender_pub_key:t.content.spender_pub_key, recipient_pub_key:t.content.recipient_pub_key}))
+    //);
+    //await Promise.all(promises);
 
     transactions.forEach(t => this.storeTransaction(t));
   }
 
-  @action
+ /* @action
   public async createOffer(
     recipientPubKey: string,
     amount: number
@@ -132,21 +137,27 @@ export class TransactorStore {
     await this.transactorService.createOffer(recipientPubKey, amount);
 
     this.fetchMyPendingOffers();
-  }
+  }*/
 
-  @action
+  /*@action
   public async acceptOffer(offerHash: string): Promise<void> {
     await this.transactorService.acceptOffer(offerHash);
 
     runInAction(() => {
       this.fetchMyTransactions();
     });
-  }
+  }*/
 
   @action
   public storeOffer(offer: Hashed<Offer>) {
     this.offers[offer.hash] = offer.content;
   }
+
+  @action
+  public removeOffer(offerhash: string) {
+    delete(this.offers[offerhash]) //= offer.content;
+  }
+
   @action
   public storeTransaction(transaction: Hashed<Transaction>) {
     this.transactions[transaction.hash] = transaction.content;

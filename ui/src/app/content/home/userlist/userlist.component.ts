@@ -2,11 +2,12 @@ import { Component, OnInit } from "@angular/core";
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from "@angular/router";
-import {  AgentProfile } from '../../../services/profiles.service'
+import {  AgentProfile, ProfilesService } from '../../../services/profiles.service'
 //import { CreateOfferGQL } from 'src/app/graphql/transactor/queries/offer-mutations-gql';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ProfilesStore } from "src/app/stores/profiles.store";
 import { TransactorStore } from "src/app/stores/transactor.store";
+import { PublicTransactorService } from "src/app/services/transactor.service";
 //import { MyOffersGQL } from 'src/app/graphql/transactor/queries/myoffers-gql';
 
 interface offerRow
@@ -22,7 +23,7 @@ interface offerRow
   styleUrls: ["./userlist.component.css"]
 })
 export class UserListComponent implements OnInit {
-  agentlist: AgentProfile[] = [];
+  //agentlist$: Observable<AgentProfile[]>;
   errorMessage!:string
   userForm!: FormGroup
  // agentSubscription!: Subscription
@@ -31,8 +32,9 @@ export class UserListComponent implements OnInit {
   //  private agents: AllAgentsGQL, 
    // private offer: CreateOfferGQL,
    // private offers:MyOffersGQL,
-    private t_store: TransactorStore,
-    private p_store: ProfilesStore,
+    private transactionService: PublicTransactorService,
+    private profilesService: ProfilesService,
+    public p_store: ProfilesStore,
     private router: Router,
     private fb: FormBuilder
     ) { 
@@ -43,12 +45,12 @@ export class UserListComponent implements OnInit {
       Rows : this.fb.array([])
     });
     try {
-      await this.p_store.fetchAllProfiles()
-      console.log("profiles",this.p_store.profiles)
+      this.profilesService.getAllProfiles()
+      //this.agentlist$ = this.p_store.knownProfiles
       /// this could be done by piping keyvalue in the ngfor template
-      for (let key in this.p_store.profiles){
-        this.agentlist.push({agent_pub_key:key, profile:this.p_store.profiles[key]})
-      }//Object.values(this.p_store.profiles).map(profile =>{return profile..content})
+      //for (let key in this.p_store.profiles){
+       // this.agentlist.push({agent_pub_key:key, profile:this.p_store.profiles[key]})
+      //Object.values(this.p_store.profiles).map(profile =>{return profile..content})
      
      /* this.agentlist = this.agents.watch().valueChanges.pipe(map(result=>{
         if (!result.errors)
@@ -57,6 +59,7 @@ export class UserListComponent implements OnInit {
         return null
       }))*/
     } catch(exception){
+        console.log(exception)
         this.errorMessage = exception
     }
     //this.agentSubscription = this.agentlist.subscribe(agents => { this.populateForm(agents)})
@@ -68,6 +71,10 @@ export class UserListComponent implements OnInit {
 
   get formArr() {
     return this.userForm.get("Rows") as FormArray;
+  }
+
+  setFormData(){
+    this.populateForm(this.p_store.knownProfiles)
   }
 
   populateForm(agentlist: AgentProfile[]){
@@ -87,7 +94,7 @@ export class UserListComponent implements OnInit {
   async createOffer(data:offerRow){
     console.log(data)
     try {
-      const result = await this.t_store.createOffer(data.id,data.amount)
+      const result = await this.transactionService.createOffer(data.id,data.amount)
       console.log(result)
      // await this.offer.mutate({creditorId:data.id,amount:data.amount},{refetchQueries: [{query: this.offers.document}]})
       //.toPromise()//.then(result => {
@@ -96,9 +103,9 @@ export class UserListComponent implements OnInit {
     //}).catch(ex=>{this.errorMessage = ex})
     } catch(exception){
       console.error(exception)
-      if ((exception as string).includes("Timeout"))
-        exception = "No reponse, the user is probably offline:"+exception
-      this.errorMessage = exception
+     // if ((exception as string).includes("Timeout"))
+       // exception = "No reponse, the user is probably offline:"+exception
+       this.errorMessage = "type:"+exception.data.type+" "+exception.data.data
        // console.log(exception)
        // this.errorMessage = exception
     }

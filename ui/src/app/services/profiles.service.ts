@@ -22,6 +22,7 @@ export interface AgentProfile {
 export class ProfilesService {
   public zomeName = 'profiles'
   private agent_pub_key: string = "DEFAULT_KEY"
+ // private mockProfile:Profile = {nickname:"thomas",fields:{["email"]:"loop"}}
 
   constructor(private hcs:HolochainService, private pstore:ProfilesStore) { 
     this.agent_pub_key = pstore.agentPubKey
@@ -31,7 +32,9 @@ export class ProfilesService {
   //get cell_holoHash(){return serializeHash(this.hcs.HoloHashByteArray_from_cell)}
 
   async getMyProfile(): Promise<AgentProfile> {
-    const profile = await this.hcs.call(this.zomeName,'get_my_profile', null);
+    let profile
+    if (!environment.mock)
+      profile = await this.hcs.call(this.zomeName,'get_my_profile', null);
     if (profile)
       this.pstore.storeAgentProfile(profile)
     return profile 
@@ -56,7 +59,7 @@ export class ProfilesService {
   async getAllProfiles(): Promise<Array<AgentProfile>> {
     let allProfiles 
     if (environment.mock)
-      allProfiles = [{agent_pub_key:this.agent_pub_key, profile:{nickname:"thomas",fields:{["email"]:"loop"}}},
+      allProfiles = [//{agent_pub_key:this.agent_pub_key, profile:{nickname:"thggggomas",fields:{["email"]:"loop"}}},
       {agent_pub_key:"FRIEND_KEY", profile:{nickname:"Roberto", fields:{['email']:"doopo"}}}]
     else{
         allProfiles = await this.hcs.call(this.zomeName,'get_all_profiles', null);

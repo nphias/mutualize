@@ -42,15 +42,15 @@ export class HomeComponent {
   }
 
   ngOnInit() {
-    //if (!sessionStorage.getItem("userhash"))
-     //   this.router.navigate(["signup"]);
+    if (!sessionStorage.getItem("userhash"))
+        this.router.navigate(["signup"]);
     //const state = this.hcs.getConnectionState()
     //if(state != "OPEN")
       //  this.errorMessage = "Holochain is "+state
   //this.filteredCrumbs = this.network.breadCrumbTrail.map(crumb=>{ return crumb.split("_")[0]})
     //this.parent_dna_id = this.hcs.dna_id_from_instance_hash(sessionStorage.getItem("parent_dna")).split("_")[0]
     try{
-      this.profilesService.createProfile({ nickname: "new_user"+this.randomIntFromInterval(500,10000), fields: {["email"]: "myemail@email.com"}})//]Dictionary<string>;}
+      //this.profilesService.createProfile({ nickname: "new_user"+this.randomIntFromInterval(500,10000), fields: {["email"]: "myemail@email.com"}})//]Dictionary<string>;}
   //    console.log("fetching profile")
 //this.ps.fetchMyProfile()//.fetchMyTransactions()
       //this.me.fetch().toPromise()

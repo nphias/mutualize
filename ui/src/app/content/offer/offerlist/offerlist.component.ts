@@ -10,6 +10,7 @@ import { Router } from "@angular/router";
 //import { HolochainService } from 'src/app/core/holochain.service';
 import { Dictionary, Offer, OfferState, PublicTransactorService } from "src/app/services/transactor.service";
 import { TransactorStore } from "src/app/stores/transactor.store";
+import { ProfilesStore } from "src/app/stores/profiles.store";
 //import { MyBalanceGQL } from 'src/app/graphql/transactor/queries/mybalance-gql';
 //import { MyTransactionsGQL } from 'src/app/graphql/transactor/queries/mytransactions-gql';
 
@@ -23,7 +24,7 @@ import { TransactorStore } from "src/app/stores/transactor.store";
 export class OfferListComponent {
   pendingOffers: Dictionary<Offer> ={}//Observable<Offer[]>;
   validOffer: Offer[] = [];
-  states = OfferState
+  //states = OfferState
   //offerState: OfferState
   //validOfferSubscription: Subscription
   //pendingOfferSubscription: Subscription
@@ -39,6 +40,7 @@ export class OfferListComponent {
               //private mybalance: MyBalanceGQL,
               //private transactions: MyTransactionsGQL,
               //private onNewOffer:ReceivedOffersGQL,
+              public p_store: ProfilesStore,
               public t_store: TransactorStore,
               private transactionService: PublicTransactorService,
             //  private hcs: HolochainService,
@@ -51,7 +53,7 @@ export class OfferListComponent {
    //   console.log("offer subscription result",result)
    // })
     try {
-      this.transactionService.queryMyPendingOffers()
+      //this.transactionService.queryMyPendingOffers()
       //this.pendingOffers = this.t_store.offers
       /*this.pendingOffers = this.offers.watch().valueChanges.pipe(map(result=>{ //.watch().valueChanges.
         if (!result.errors)
@@ -87,6 +89,7 @@ export class OfferListComponent {
 
  async verifyOffer(transactID:string){
     try {
+      this.transactionService.acceptOffer(transactID)
       /*this.consent.mutate({transactionId:transactID}).toPromise().then( async result=>{
         console.log(result)
         await new Promise((resolve) => setTimeout(() => resolve(), 300));
@@ -135,6 +138,8 @@ export class OfferListComponent {
   cancelOffer(transactID:string){
     console.log(transactID)
     try {
+      console.log(this.t_store.offer(transactID))
+      //this.transactionService.cancelOffer(transactID)
       this.transactionService.cancelOffer(transactID)
       /*this.cancel_offer.mutate({transactionId:transactID},{refetchQueries: [{query: this.offers.document}]})
       .toPromise().catch(ex=>{this.errorMessage = ex})*/
@@ -142,6 +147,20 @@ export class OfferListComponent {
         console.error(exception)
        // if (Object.JSON.parse(exception).includes("Timeout"))
          exception = "No reponse, the user is probably offline:"+exception
+        this.errorMessage = exception
+    }
+  }
+
+  async rejectOffer(transactID:string){
+    try {
+      this.transactionService.rejectOffer(transactID)
+     /* const result = await this.accept.mutate({transactionId:transactID,approvedHeaderId:header_address}
+        ,{refetchQueries: [{query: this.offers.document},{query:this.transactions.document}]})
+        .toPromise().catch(ex=>{console.log("in promise catch"); this.errorMessage = ex})
+      console.log(result)
+      this.mybalance.fetch()*/
+    } catch(exception){
+        console.log(exception)
         this.errorMessage = exception
     }
   }

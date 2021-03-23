@@ -1,9 +1,11 @@
 <!--<app-header [breadCrumbTrail]="filteredCrumbs"></app-header>-->
   <div class="overflow-x-hidden pt-4 pb-20">
     <div class="text-red-500">{{errorMessage}}</div>
-    <div *mobxAutorun>
-      <span class="text-gray-100 py-2">Name: {{p_store.MyProfile.nickname}}, My Balance: {{t_store.MyBalance}}</span>
-    </div>
+    <div *ngIf="p_store.MyProfile">
+      <div *mobxAutorun>
+        <span class="text-gray-100 py-2">Name: {{p_store.MyProfile.nickname}}, My Balance: {{t_store.MyBalance}}</span>
+      </div>
+    </div>  
     <app-offerlist></app-offerlist>
   </div>
 

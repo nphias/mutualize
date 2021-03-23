@@ -39,6 +39,7 @@ export class TransactionListComponent implements OnInit {
         }
       }))*/
     } catch(exception){
+        console.log(exception)
         this.errorMessage = "type:"+exception.data.type+" "+exception.data.data
         console.log(exception)
     }

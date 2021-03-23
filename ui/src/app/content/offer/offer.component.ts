@@ -40,12 +40,13 @@ export class OfferComponent implements OnInit {
   //});
 
   ngOnInit() {
-    //if (!sessionStorage.getItem("userhash"))
-    //  this.router.navigate(["signup"]);
+    if (!sessionStorage.getItem("userhash"))
+      this.router.navigate(["signup"]);
     //if(this.hcs.getConnectionState() == 2)
       //this.errorMessage = "Holochain is disconnected"
       //this.filteredCrumbs = this.hcs.breadCrumbTrail.map(crumb=>{ return crumb.split("_")[0]})
     try{
+      this.transactionService.queryMyPendingOffers()
       //this.balance = this.transactionService.getMyBalance()
       /*this.balance = this.mybalance.watch().valueChanges.pipe(map(result=>{
         if (result.errors){

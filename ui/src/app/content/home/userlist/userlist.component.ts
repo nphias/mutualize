@@ -74,6 +74,7 @@ export class UserListComponent implements OnInit {
   }
 
   setFormData(){
+    console.log(this.p_store.knownProfiles)
     this.populateForm(this.p_store.knownProfiles)
   }
 

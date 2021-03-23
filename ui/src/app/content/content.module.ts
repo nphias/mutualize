@@ -11,6 +11,7 @@ import { UserListComponent } from './home/userlist/userlist.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { OfferComponent } from './offer/offer.component';
 import { OfferListComponent } from './offer/offerlist/offerlist.component';
+import { SignupComponent } from './login/signup/signup.component';
  
 @NgModule({
   imports: [
@@ -25,7 +26,8 @@ import { OfferListComponent } from './offer/offerlist/offerlist.component';
      UserListComponent,
      HomeComponent,
      OfferComponent,
-     OfferListComponent
+     OfferListComponent,
+     SignupComponent
      ],
 })
 export class ContentModule {}

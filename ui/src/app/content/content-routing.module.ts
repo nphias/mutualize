@@ -4,6 +4,7 @@ import { HomeComponent } from './home/home.component';
 
 // Import all the components for which navigation service has to be activated
 import { LazyComponent } from './lazycontent/lazy.component';
+import { SignupComponent } from './login/signup/signup.component';
 import { OfferComponent } from './offer/offer.component';
 
 const routes: Routes = [
@@ -14,9 +15,10 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/home',
+    redirectTo: '/signup',
     pathMatch: 'full'
   },
+  { path: 'signup', component: SignupComponent },
   { path: 'home', component: HomeComponent },
   {
     path: 'offers',

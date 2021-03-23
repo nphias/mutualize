@@ -17,13 +17,20 @@ export interface Transaction extends Multiparty {
   offer_hash: string;
 }
 
-export enum OfferState {
-  Pending,
-  Canceled,
-  Rejected,
-  Completed,
-  Approved
-}
+/*export enum OfferState {
+  Pending = 'Pending',
+  Canceled = 'Canceled',
+  Rejected = 'Rejected',
+  Completed = 'Completed',
+  Approved = 'Approved'
+}*/
+
+export type OfferState =
+  | 'Pending'
+  | 'Canceled'
+  | 'Rejected'
+  | 'Completed'
+  | 'Approved'
 
 export interface Offer extends Multiparty {
   amount: number;
@@ -79,11 +86,12 @@ export class PublicTransactorService {
 
   async queryMyPendingOffers(): Promise<Array<Hashed<Offer>>> {
     if (environment.mock){
-      let offer:Offer = {spender_pub_key:"321",recipient_pub_key:"654", amount: 5, state:OfferState['Pending']}
+      let offer:Offer = {spender_pub_key:"321",recipient_pub_key:"654", amount: 5, state:'Pending'}
       let offers:Array<Hashed<Offer>> = [{hash:"123", content:offer}]
       return new Promise(()=>{offers})
     }else{
       const offers = await this.hcs.call(this.zomeName,'query_my_pending_offers', null);
+      console.log(offers)
       this.t_store.storeMyPendingOffers(this.agent_pub_key,offers)
       return offers
     }
@@ -91,7 +99,7 @@ export class PublicTransactorService {
 
   async createOffer(recipientPubKey: string, amount: number) { 
     if (environment.mock){
-      const offer:Offer = {spender_pub_key:this.agent_pub_key,recipient_pub_key:recipientPubKey, amount: amount, state:OfferState['Pending']}
+      const offer:Offer = {spender_pub_key:this.agent_pub_key,recipient_pub_key:recipientPubKey, amount: amount, state:'Pending'}
       const offers:Array<Hashed<Offer>> = [{hash:"123", content:offer}]
       this.t_store.storeMyPendingOffers(this.agent_pub_key,offers)
     } else{
@@ -124,8 +132,12 @@ export class PublicTransactorService {
   }
 
   async rejectOffer(offerHash: string) {
-    await this.hcs.call(this.zomeName,'reject_offer', {
-      offer_hash: offerHash,
-    });
+    if(environment.mock){
+      this.t_store.removeOffer(offerHash)
+    } else {
+      await this.hcs.call(this.zomeName,'reject_offer', {
+        offer_hash: offerHash,
+      });
+    }
   } 
 }

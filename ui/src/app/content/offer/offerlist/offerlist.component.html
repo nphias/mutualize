@@ -3,7 +3,7 @@
     <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
       <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
         <div style="color:red">{{errorMessage}}</div>
-        <div class="text-gray-100 py-2">Pending offers</div>
+        <div class="text-gray-100 py-2">Pending offers Incoming</div>
           <div class="panel panel-default">
             <div class="panel-body">
               <section class="post-footer-comment-wrapper">
@@ -15,22 +15,55 @@
                       <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To</th>
                       <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
                       <!--<th scope="col">Date</th>-->
-                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">state</th>
                       <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">action</th>
                     </tr>
                   </thead>
                 
                   <tbody class="bg-white divide-y divide-gray-200" *mobxAutorun>
-                      <tr *ngFor='let offer of t_store.myPendingOffers'>
+                      <tr *ngFor='let offer of t_store.IncomingOffers'>
                         <td class="px-6 py-4 whitespace-nowrap">{{offer.hash}}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{offer.content.spender_pub_key}}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{offer.content.recipient_pub_key}}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{t_store.counterpartyNickname(offer.content)}}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{p_store.MyProfile.nickname}}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{offer.content.amount}}</td>
                         <!--<td>{{offer.value.timestamp}}</td>-->
-                        <td class="px-6 py-4 whitespace-nowrap">{{offer.content.state}}</td>
-                        <td><button *ngIf="offer.content.state == states.Approved" (click)="verifyOffer(offer.hash)">Accept offer</button>
+                        <td><button (click)="verifyOffer(offer.hash)">Accept offer</button>
                           <!--<button *ngIf="offer.state == 'Pending'" (click)="acceptOffer(offer.id)">accept offer</button>-->
-                            <button *ngIf="offer.content.state != states.Completed && offer.content.state != states.Canceled" (click)="cancelOffer(offer.hash)">cancel offer</button></td>
+                            <button (click)="rejectOffer(offer.hash)">Reject offer</button></td>
+                      </tr>
+                  </tbody>
+                </table>
+                <br />
+              </section>
+              <br />
+            </div>
+          </div>
+          <div class="text-gray-100 py-2">Pending offers Outgoing</div>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <section class="post-footer-comment-wrapper">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">T_ID</th>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From</th>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To</th>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                      <!--<th scope="col">Date</th>-->
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">action</th>
+                    </tr>
+                  </thead>
+                
+                  <tbody class="bg-white divide-y divide-gray-200" *mobxAutorun>
+                      <tr *ngFor='let offer of t_store.OutgoingOffers'>
+                        <td class="px-6 py-4 whitespace-nowrap">{{offer.hash}}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{p_store.MyProfile.nickname}}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{t_store.counterpartyNickname(offer.content)}}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{offer.content.amount}}</td>
+                        <!--<td>{{offer.value.timestamp}}</td>-->
+                        <!--<td class="px-6 py-4 whitespace-nowrap">{{offer.content.state}}</td>-->
+                        <td><!--<button *ngIf="offer.content.state == 'Pending'" (click)="verifyOffer(offer.hash)">Accept offer</button>-->
+                          <!--<button *ngIf="offer.state == 'Pending'" (click)="acceptOffer(offer.id)">accept offer</button>-->
+                            <button (click)="cancelOffer(offer.hash)">cancel offer</button></td>
                       </tr>
                   </tbody>
                 </table>

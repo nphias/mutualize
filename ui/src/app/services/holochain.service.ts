@@ -51,7 +51,7 @@ export class HolochainService {
                 .then(async (connection)=>{
                 this.hcConnection = connection
                 const appInfo = await connection.appInfo({ installed_app_id: environment.APP_ID });
-                this.cellId = appInfo.cell_data[0][0];
+                this.cellId = appInfo.cell_data[0].cell_id;
                 this.pstore.agentPubKey = serializeHash(this.cellId[1])
                 this.tstore.agent_pub_key = serializeHash(this.cellId[1])
                 console.log("Connected to holochain",appInfo.cell_data)

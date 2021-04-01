@@ -11,13 +11,12 @@ import { ProfilesStore } from 'src/app/stores/profiles.store';
 
 @Component({
   selector: 'app-signup',
-  templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.css']
+  templateUrl: './signup.component.html'
 })
 export class SignupComponent implements OnInit {
   //user: Agent;
   registered: boolean =false//Promise<boolean> = new Promise(()=>{return false});
-  errorMessage: string = "Sign up"
+  errorMessage?: string //= "Sign up"
   avatarLink: string = "../../assets/img/avatar_placeholder.jpg"
 
   constructor(
@@ -37,7 +36,7 @@ export class SignupComponent implements OnInit {
 
   ngOnInit() {
     try {
-    this.profilesService.getMyProfile()
+      this.profilesService.getMyProfile()
     /*this.registered = this.isRegistered().then((result)=>{
       if(result)
       this.errorMessage = "You are registered as: "+this.user.username
@@ -63,13 +62,14 @@ export class SignupComponent implements OnInit {
     //const isRegistered = await this.registered
     //if (!isRegistered) {
       try{
+        console.log("before createprofile")
         await this.profilesService.createProfile(profile)
               // await this.setUser.mutate({username:handle}).toPromise()//.then(()=>{
         //this.user.username = handle
         console.log("user registered")
         this.setAndRoute(profile)
       }catch(error){
-        this.errorMessage = error + " Note: an error here might mean you are trying to register with a pre-existing / existing username "
+        this.errorMessage = error
       }
     //} 
   };

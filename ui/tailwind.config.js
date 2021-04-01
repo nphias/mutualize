@@ -2,7 +2,11 @@ module.exports = {
   purge: ['./src/**/*.{html,ts}'],
   darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: theme => ({
+        'world-splash': "url('./assets/img/graph_blue.png')",
+       })
+    },
   },
   variants: {
     extend: {},

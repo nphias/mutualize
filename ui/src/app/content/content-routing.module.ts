@@ -3,16 +3,12 @@ import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 
 // Import all the components for which navigation service has to be activated
-import { LazyComponent } from './lazycontent/lazy.component';
-import { SignupComponent } from './login/signup/signup.component';
+import { SignupComponent } from './signup/signup.component';
+import { NetworksComponent } from './networks/networks.component';
 import { OfferComponent } from './offer/offer.component';
 
 const routes: Routes = [
-  { path: 'lazy', component: LazyComponent },
-  {
-    path: 'lazy', // If no matching route found, go back to home route
-    component: LazyComponent
-  },
+  { path: 'projects', component: NetworksComponent },
   {
     path: '',
     redirectTo: '/signup',

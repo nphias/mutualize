@@ -23,10 +23,10 @@
     "@angular/platform-browser": "~11.2.0",
     "@angular/platform-browser-dynamic": "~11.2.0",
     "@angular/router": "~11.2.0",
-    "@holochain/conductor-api": "0.0.1-dev.16",
+    "@holochain/conductor-api": "github:holochain/holochain-conductor-api#Connoropolous-patch-2",
     "js-base64": "^3.6.0",
     "mobx": "^6.1.6",
-    "mobx-angular": "^4.2.0",
+    "mobx-angular": "^4.3.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.11.3"

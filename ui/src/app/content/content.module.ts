@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import {ContentRoutingModule} from './content-routing.module'
-import { LazyComponent } from './lazycontent/lazy.component';
+import { NetworksComponent } from './networks/networks.component';
 import { MobxAngularModule } from 'mobx-angular';
 import { TransactionListComponent } from './home/transactionlist/transactionlist.component';
 import { HomeComponent } from './home/home.component';
@@ -11,7 +11,7 @@ import { UserListComponent } from './home/userlist/userlist.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { OfferComponent } from './offer/offer.component';
 import { OfferListComponent } from './offer/offerlist/offerlist.component';
-import { SignupComponent } from './login/signup/signup.component';
+import { SignupComponent } from './signup/signup.component';
  
 @NgModule({
   imports: [
@@ -21,7 +21,7 @@ import { SignupComponent } from './login/signup/signup.component';
     FormsModule,
     ReactiveFormsModule
   ],
-  declarations: [LazyComponent,
+  declarations: [NetworksComponent,
      TransactionListComponent,
      UserListComponent,
      HomeComponent,

@@ -55,7 +55,7 @@ export class ProfilesStore {
  // if( environment.mock){
  //   this.profiles["Friend_KEY"] = {nickname:"Roberto", fields:{['email']:"doopo"}}
  // }
- console.log(allProfiles.length)
+ //console.log(allProfiles.length)
     runInAction(() => {
       for (const agentProfile of allProfiles) {
         this.profiles[agentProfile.agent_pub_key] = agentProfile.profile;

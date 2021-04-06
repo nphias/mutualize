@@ -75,6 +75,7 @@ export class SignupComponent implements OnInit {
   };
 
   setAndRoute(profile:Profile){
+    console.log("rediredceted")
     sessionStorage.setItem("userhash",this.pstore.agentPubKey)
     sessionStorage.setItem("username",profile.nickname)
     sessionStorage.setItem("avatar",profile.fields.avatar)

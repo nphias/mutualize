@@ -74,11 +74,12 @@ export class UserListComponent implements OnInit {
   }
 
   setFormData(){
-    console.log(this.p_store.knownProfiles)
+    //console.log(this.p_store.knownProfiles)
     this.populateForm(this.p_store.knownProfiles)
   }
 
   populateForm(agentlist: AgentProfile[]){
+    this.formArr.clear()
     for (let i = 0; i < agentlist.length; i++ ) {
       if (agentlist[i].agent_pub_key != sessionStorage.getItem("userhash")){
         this.formArr.push(

@@ -27,8 +27,13 @@
               <tbody class="bg-white divide-y divide-gray-200" formArrayName="Rows">
                 <tr *ngFor="let itemrow of formArr.controls; let i=index;" [formGroupName]="i">
                   <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=4&amp;w=256&amp;h=256&amp;q=60" alt="">
+                      </div>
                       <input formControlName="id" type="hidden"/>
-                      <label class="small_label">{{formArr.value[i].id}}</label>
+                      <label class="small_label px-2">{{formArr.value[i].id}}</label>
+                    </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <label>{{formArr.value[i].username}}</label>
